@@ -5,7 +5,14 @@
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
       "Bash(curl -s http://localhost:3000)",
-      "Bash(kill %1)"
+      "Bash(kill %1)",
+      "Bash(cp /Users/connor/Documents/osint/.claude/worktrees/globe-v1/components/world/Globe/globe-types.ts /Users/connor/Documents/osint/.claude/worktrees/world-data/components/world/Globe/globe-types.ts)",
+      "Bash(cp /Users/connor/Documents/osint/.claude/worktrees/globe-v1/components/world/Globe/globe-utils.ts /Users/connor/Documents/osint/.claude/worktrees/world-data/components/world/Globe/globe-utils.ts)",
+      "Bash(cp /Users/connor/Documents/osint/.claude/worktrees/globe-v1/components/world/Globe/index.ts /Users/connor/Documents/osint/.claude/worktrees/world-data/components/world/Globe/index.ts)",
+      "Bash(cp /Users/connor/Documents/osint/.claude/worktrees/globe-v1/components/world/Globe/GlobeFallback.tsx /Users/connor/Documents/osint/.claude/worktrees/world-data/components/world/Globe/GlobeFallback.tsx)",
+      "Bash(cp /Users/connor/Documents/osint/.claude/worktrees/globe-v1/components/world/Globe/GlobeSphere.tsx /Users/connor/Documents/osint/.claude/worktrees/world-data/components/world/Globe/GlobeSphere.tsx)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
