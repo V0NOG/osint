@@ -139,7 +139,7 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
   // Before mount or WebGL unavailable: show static fallback
   if (!mounted || webGLSupported === false) {
     return (
-      <div className={className} style={{ minHeight: 480 }}>
+      <div className={className} style={{ height: 480 }}>
         <GlobeFallback />
       </div>
     )
@@ -148,7 +148,7 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
   return (
     <div
       className={`relative w-full ${className ?? ''}`}
-      style={{ minHeight: 480, cursor }}
+      style={{ height: 480, cursor }}
     >
       {/* Depth gradient background — blends canvas into page bg */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/15 via-transparent to-[var(--color-bg-base)]/60 rounded-xl pointer-events-none z-0" />
@@ -161,7 +161,7 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
         isInteracting={isInteracting}
         onHover={handleHover}
         onSelect={handleSelect}
-        style={{ minHeight: 480, width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%' }}
         className="w-full h-full"
       />
 
