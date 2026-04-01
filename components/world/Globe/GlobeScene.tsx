@@ -32,8 +32,8 @@ export function GlobeScene({
         enableDamping
         dampingFactor={0.05}
         enablePan={false}
-        minDistance={2.6}
-        maxDistance={5.5}
+        minDistance={3.5}
+        maxDistance={5.0}
         minPolarAngle={Math.PI * 0.08}
         maxPolarAngle={Math.PI * 0.92}
       />
