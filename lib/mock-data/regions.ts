@@ -1,0 +1,102 @@
+import type { Region } from '../types'
+
+export const mockRegions: Region[] = [
+  {
+    id: 'eastern-europe',
+    name: 'Eastern Europe',
+    slug: 'eastern-europe',
+    countries: ['russia', 'ukraine'],
+    overallRiskScore: 90,
+    riskLevel: 'critical',
+    summary:
+      'Eastern Europe is defined by the ongoing Russia-Ukraine war, the most significant conventional military conflict in Europe since 1945. NATO\'s eastern flank has been significantly reinforced. The conflict has reshaped European energy markets and defense spending.',
+    keyTensions: [
+      'Russia-Ukraine active conflict',
+      'NATO eastern flank reinforcement',
+      'Nuclear signaling escalation risk',
+      'European energy supply disruption',
+    ],
+    lastUpdated: '2026-03-30',
+    activeEventCount: 24,
+    activeForecastCount: 8,
+  },
+  {
+    id: 'east-asia',
+    name: 'East Asia',
+    slug: 'east-asia',
+    countries: ['china', 'north-korea', 'taiwan'],
+    overallRiskScore: 76,
+    riskLevel: 'high',
+    summary:
+      'East Asia faces structural tension across multiple fault lines: the Taiwan Strait, Korean Peninsula, and South China Sea. China\'s military modernization and North Korea\'s nuclear capabilities are primary drivers of regional instability. US-China strategic competition shapes alliance dynamics across the Indo-Pacific.',
+    keyTensions: [
+      'PRC military pressure on Taiwan',
+      'North Korean nuclear and missile program',
+      'South China Sea territorial disputes',
+      'US-China strategic competition',
+      'DPRK-Russia military cooperation',
+    ],
+    lastUpdated: '2026-03-28',
+    activeEventCount: 16,
+    activeForecastCount: 7,
+  },
+  {
+    id: 'middle-east',
+    name: 'Middle East',
+    slug: 'middle-east',
+    countries: ['iran', 'israel'],
+    overallRiskScore: 83,
+    riskLevel: 'high',
+    summary:
+      'The Middle East is experiencing its most volatile period in decades. The Gaza conflict, Iran\'s nuclear advances, and Houthi attacks on Red Sea shipping have combined to create multi-vector instability. Regional normalization processes have stalled. Iran\'s direct confrontation with Israel marks a significant threshold crossing.',
+    keyTensions: [
+      'Gaza conflict and regional spillover',
+      'Iran nuclear program near-breakout',
+      'Israel-Hezbollah northern front',
+      'Houthi Red Sea attacks disrupting global trade',
+      'Iran-Israel direct confrontation risk',
+    ],
+    lastUpdated: '2026-03-29',
+    activeEventCount: 21,
+    activeForecastCount: 6,
+  },
+  {
+    id: 'sub-saharan-africa',
+    name: 'Sub-Saharan Africa',
+    slug: 'sub-saharan-africa',
+    countries: ['ethiopia', 'myanmar'],
+    overallRiskScore: 69,
+    riskLevel: 'elevated',
+    summary:
+      'Sub-Saharan Africa faces a confluence of climate stress, weak governance, and armed conflict. The Sahel region has experienced a wave of military coups. Ethiopia\'s post-conflict stabilization is fragile. Wagner/Africa Corps presence in Mali, Burkina Faso, and Niger has reshaped external security partnerships.',
+    keyTensions: [
+      'Sahel coup belt instability',
+      'Ethiopia post-conflict fragility',
+      'Sudan civil war and humanitarian crisis',
+      'Russia/Wagner influence expansion',
+      'Climate-driven resource conflict',
+    ],
+    lastUpdated: '2026-03-26',
+    activeEventCount: 14,
+    activeForecastCount: 4,
+  },
+  {
+    id: 'latin-america',
+    name: 'Latin America',
+    slug: 'latin-america',
+    countries: ['venezuela'],
+    overallRiskScore: 58,
+    riskLevel: 'elevated',
+    summary:
+      'Latin America faces persistent challenges from organized crime, democratic backsliding, and economic fragility. Venezuela\'s political and economic collapse continues to generate regional refugee flows. The Essequibo dispute raises potential for interstate conflict. Mexico\'s cartel violence has reached record levels.',
+    keyTensions: [
+      'Venezuela political crisis and regional displacement',
+      'Venezuela-Guyana Essequibo territorial dispute',
+      'Mexico cartel violence and state capacity',
+      'Democratic erosion in multiple states',
+    ],
+    lastUpdated: '2026-03-25',
+    activeEventCount: 8,
+    activeForecastCount: 3,
+  },
+]

@@ -1,0 +1,7 @@
+node_modules
+.next
+.env
+.claude/worktrees
+dist
+build
+coverage
