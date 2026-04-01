@@ -6,4 +6,4 @@ dist
 build
 coverage
 *.tsbuildinfo
-tsconfig.tsbuildinfo
+tsconfig.tsbuildinfotsconfig.tsbuildinfo
