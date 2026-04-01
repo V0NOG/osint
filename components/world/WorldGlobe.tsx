@@ -95,9 +95,10 @@ function CountryTooltip({ country, onClose }: CountryTooltipProps) {
 
 interface WorldGlobeProps {
   className?: string
+  onSelect?: (marker: GlobeCountryMarker | null) => void
 }
 
-export function WorldGlobe({ className }: WorldGlobeProps) {
+export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
   // Defer render until client to avoid hydration mismatch
   const [mounted, setMounted] = useState(false)
   const webGLSupported = useWebGLSupport()
@@ -111,6 +112,11 @@ export function WorldGlobe({ className }: WorldGlobeProps) {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Forward internal selection to parent when it changes
+  useEffect(() => {
+    onSelect?.(selectedCountry)
+  }, [selectedCountry, onSelect])
 
   const handleHover = useCallback((country: GlobeCountryMarker | null) => {
     setHoveredCountry(country)

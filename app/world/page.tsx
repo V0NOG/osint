@@ -1,5 +1,5 @@
 import { Activity, AlertTriangle, Globe, TrendingUp, Zap } from 'lucide-react'
-import { WorldGlobePlaceholder } from '@/components/world/WorldGlobePlaceholder'
+import { WorldGlobeSection } from '@/components/world/WorldGlobeSection'
 import { EventCard } from '@/components/event/EventCard'
 import { ForecastCard } from '@/components/forecast/ForecastCard'
 import { StatBlock } from '@/components/ui/StatBlock'
@@ -92,9 +92,7 @@ export default function WorldPage() {
             </div>
 
             {/* Globe */}
-            <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl overflow-hidden">
-              <WorldGlobePlaceholder />
-            </div>
+            <WorldGlobeSection countries={mockCountries} />
           </div>
 
           {/* Region risk summary strip */}
