@@ -7,6 +7,7 @@ const nextConfig = {
   experimental: {
     typedRoutes: false,
   },
+  transpilePackages: ['three', '@react-three/fiber', '@react-three/drei'],
 }
 
 module.exports = nextConfig

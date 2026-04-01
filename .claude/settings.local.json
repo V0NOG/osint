@@ -5,7 +5,12 @@
       "Bash(npx tsc:*)",
       "Bash(npm run:*)",
       "Bash(curl -s http://localhost:3000)",
-      "Bash(kill %1)"
+      "Bash(kill %1)",
+      "Bash(ls /Users/connor/Documents/osint/.claude/worktrees/globe-v1/next.config*)",
+      "Bash(ls /Users/connor/Documents/osint/.claude/worktrees/globe-v1/*.css)",
+      "Bash(node:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:d[k] for k in ['types','exports','main'] if k in d}, indent=2\\)\\)\")",
+      "Bash(git add:*)"
     ]
   }
 }
