@@ -14,7 +14,7 @@ interface AppShellProps {
 
 function ShellLayout({ children }: AppShellProps) {
   const { collapsed } = useSidebar()
-  const sidebarWidth = collapsed ? 'var(--sidebar-collapsed-width)' : '240px'
+  const sidebarWidth = collapsed ? 'var(--sidebar-collapsed-width)' : 'var(--sidebar-width)'
 
   return (
     <div
