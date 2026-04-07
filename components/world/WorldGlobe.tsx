@@ -7,6 +7,8 @@ import { GlobeFallback } from './Globe/GlobeFallback'
 import { countriesToMarkers } from './Globe'
 import type { GlobeCountryMarker } from './Globe'
 import { mockCountries } from '@/lib/mock-data/countries'
+import { mockArcs } from '@/lib/mock-data/arcs'
+import type { CountryRiskMap } from './Globe/GlobeCountries'
 import { getRiskTextClass } from '@/lib/utils/risk'
 import { Badge } from '@/components/ui/Badge'
 
@@ -109,6 +111,11 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
 
   const markers = useMemo(() => countriesToMarkers(mockCountries), [])
 
+  const countryRiskMap = useMemo<CountryRiskMap>(
+    () => Object.fromEntries(mockCountries.map((c) => [c.iso3, c.riskLevel])),
+    []
+  )
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -139,7 +146,7 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
   // Before mount or WebGL unavailable: show static fallback
   if (!mounted || webGLSupported === false) {
     return (
-      <div className={className} style={{ height: 480 }}>
+      <div className={`h-full ${className ?? ''}`} style={{ minHeight: 480 }}>
         <GlobeFallback />
       </div>
     )
@@ -147,8 +154,8 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
 
   return (
     <div
-      className={`relative w-full ${className ?? ''}`}
-      style={{ height: 480, cursor }}
+      className={`relative w-full h-full ${className ?? ''}`}
+      style={{ minHeight: 480, cursor }}
     >
       {/* Depth gradient background — blends canvas into page bg */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/15 via-transparent to-[var(--color-bg-base)]/60 rounded-xl pointer-events-none z-0" />
@@ -156,12 +163,14 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
       {/* 3D canvas */}
       <GlobeCanvas
         markers={markers}
+        arcs={mockArcs}
+        countryRiskMap={countryRiskMap}
         hoveredId={hoveredCountry?.countryId ?? null}
         selectedId={selectedCountry?.countryId ?? null}
         isInteracting={isInteracting}
         onHover={handleHover}
         onSelect={handleSelect}
-        style={{ width: '100%', height: '100%' }}
+        style={{ minHeight: 480, width: '100%', height: '100%' }}
         className="w-full h-full"
       />
 
