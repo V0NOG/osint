@@ -4,11 +4,14 @@ import { GlobeSphere } from './GlobeSphere'
 import { GlobeAtmosphere } from './GlobeAtmosphere'
 import { GlobeMarkers } from './GlobeMarkers'
 import { GlobeArcs } from './GlobeArcs'
+import { GlobeCountries } from './GlobeCountries'
 import type { GlobeCountryMarker, GlobeArc, GlobeCallbacks } from './globe-types'
+import type { CountryRiskMap } from './GlobeCountries'
 
 interface GlobeSceneProps extends GlobeCallbacks {
   markers: GlobeCountryMarker[]
   arcs?: GlobeArc[]
+  countryRiskMap: CountryRiskMap
   hoveredId: string | null
   selectedId: string | null
   isInteracting: boolean
@@ -17,6 +20,7 @@ interface GlobeSceneProps extends GlobeCallbacks {
 export function GlobeScene({
   markers,
   arcs,
+  countryRiskMap,
   hoveredId,
   selectedId,
   isInteracting,
@@ -25,7 +29,6 @@ export function GlobeScene({
 }: GlobeSceneProps) {
   return (
     <>
-      {/* Orbit controls — pause auto-rotate while user is hovering a marker */}
       <OrbitControls
         autoRotate={!isInteracting}
         autoRotateSpeed={0.35}
@@ -38,20 +41,14 @@ export function GlobeScene({
         maxPolarAngle={Math.PI * 0.92}
       />
 
-      {/* Lighting */}
       <ambientLight intensity={0.35} color="#c8d8f8" />
-      {/* Primary sun — warm-white, slight offset */}
       <directionalLight position={[5, 3, 5]} intensity={1.1} color="#ffffff" />
-      {/* Blue fill from opposite side */}
       <directionalLight position={[-4, -1.5, -4]} intensity={0.2} color="#2244aa" />
 
-      {/* Globe body + grid */}
+      {/* Render order: sphere → atmosphere → countries → markers → arcs */}
       <GlobeSphere />
-
-      {/* Atmospheric glow shells */}
       <GlobeAtmosphere />
-
-      {/* Country risk markers */}
+      <GlobeCountries countryRiskMap={countryRiskMap} />
       <GlobeMarkers
         markers={markers}
         hoveredId={hoveredId}
@@ -59,8 +56,6 @@ export function GlobeScene({
         onHover={onHover}
         onSelect={onSelect}
       />
-
-      {/* Arc overlay (future data wiring) */}
       <GlobeArcs arcs={arcs} />
     </>
   )

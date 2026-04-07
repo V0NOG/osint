@@ -2,10 +2,12 @@
 import { Canvas } from '@react-three/fiber'
 import { GlobeScene } from './GlobeScene'
 import type { GlobeCountryMarker, GlobeArc, GlobeCallbacks } from './globe-types'
+import type { CountryRiskMap } from './GlobeCountries'
 
 interface GlobeCanvasProps extends GlobeCallbacks {
   markers: GlobeCountryMarker[]
   arcs?: GlobeArc[]
+  countryRiskMap: CountryRiskMap
   hoveredId: string | null
   selectedId: string | null
   isInteracting: boolean
@@ -16,6 +18,7 @@ interface GlobeCanvasProps extends GlobeCallbacks {
 export function GlobeCanvas({
   markers,
   arcs,
+  countryRiskMap,
   hoveredId,
   selectedId,
   isInteracting,
@@ -35,6 +38,7 @@ export function GlobeCanvas({
       <GlobeScene
         markers={markers}
         arcs={arcs}
+        countryRiskMap={countryRiskMap}
         hoveredId={hoveredId}
         selectedId={selectedId}
         isInteracting={isInteracting}
