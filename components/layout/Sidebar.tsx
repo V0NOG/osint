@@ -117,19 +117,19 @@ export function Sidebar() {
         </div>
 
         {/* Status indicator */}
-        {!collapsed && (
-          <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[var(--color-border)] bg-[var(--color-bg-base)]">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse-slow flex-shrink-0" />
+        <div
+          className={cn(
+            'border-b border-[var(--color-border)] bg-[var(--color-bg-base)]',
+            collapsed ? 'flex justify-center py-2.5' : 'flex items-center gap-2 px-4 py-2.5'
+          )}
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse-slow flex-shrink-0" />
+          {!collapsed && (
             <span className="text-[10px] text-[var(--color-text-tertiary)] font-medium uppercase tracking-wider">
               Live monitoring
             </span>
-          </div>
-        )}
-        {collapsed && (
-          <div className="flex justify-center py-2.5 border-b border-[var(--color-border)] bg-[var(--color-bg-base)]">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse-slow" />
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Primary navigation */}
         <nav className={cn('flex-1 py-3 space-y-0.5 overflow-y-auto', collapsed ? 'px-1' : 'px-2')}>
@@ -167,6 +167,7 @@ export function Sidebar() {
           <button
             onClick={toggle}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             className="p-1.5 rounded-md text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-elevated)] transition-all duration-150"
           >
             {collapsed ? (
