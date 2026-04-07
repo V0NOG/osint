@@ -200,6 +200,15 @@
     }
   }
 
+  @keyframes pulseSlow {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
   .animate-shimmer {
     animation: shimmer 2s linear infinite;
     background: linear-gradient(
@@ -221,6 +230,10 @@
 
   .animate-pulse-ring {
     animation: pulseRing 2s ease-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 2s ease-in-out infinite;
   }
 
   .transition-base {
