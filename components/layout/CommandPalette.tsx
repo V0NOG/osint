@@ -139,7 +139,7 @@ function buildResults(query: string): PaletteResult[] {
 }
 
 export function CommandPalette() {
-  const { open, closePalette } = useCommandPalette()
+  const { open, openPalette, closePalette } = useCommandPalette()
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -149,11 +149,11 @@ export function CommandPalette() {
 
   // Reset on open
   useEffect(() => {
-    if (open) {
-      setQuery('')
-      setActiveIndex(0)
-      setTimeout(() => inputRef.current?.focus(), 10)
-    }
+    if (!open) return
+    setQuery('')
+    setActiveIndex(0)
+    const t = setTimeout(() => inputRef.current?.focus(), 10)
+    return () => clearTimeout(t)
   }, [open])
 
   // ⌘K global shortcut
@@ -162,14 +162,12 @@ export function CommandPalette() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         if (open) closePalette()
-        else {
-          window.dispatchEvent(new CustomEvent('geopol:open-palette'))
-        }
+        else openPalette()
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [open, closePalette])
+  }, [open, openPalette, closePalette])
 
   const navigate = useCallback(
     (result: PaletteResult) => {
@@ -194,11 +192,6 @@ export function CommandPalette() {
     }
   }
 
-  // Reset activeIndex when results change
-  useEffect(() => {
-    setActiveIndex(0)
-  }, [query])
-
   if (!open) return null
 
   // Group results for rendering
@@ -222,7 +215,6 @@ export function CommandPalette() {
       <div
         className="relative w-full max-w-[560px] mx-4 bg-[var(--color-bg-surface)] border border-[var(--color-border-strong)] rounded-xl shadow-2xl overflow-hidden animate-slide-in"
         onClick={(e) => e.stopPropagation()}
-        onKeyDown={handleKeyDown}
       >
         {/* Input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--color-border)]">
@@ -231,6 +223,7 @@ export function CommandPalette() {
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Search countries, events, forecasts..."
             className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none"
           />
