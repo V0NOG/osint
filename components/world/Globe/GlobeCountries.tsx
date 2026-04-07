@@ -77,23 +77,21 @@ function CountryFill({ positions, color, opacity }: CountryFillProps) {
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-    geo.computeVertexNormals()
     return geo
   }, [positions])
 
-  const material = useMemo(
-    () =>
-      new THREE.MeshBasicMaterial({
-        color,
-        transparent: true,
-        opacity,
-        side: THREE.FrontSide,
-        depthWrite: false,
-      }),
-    [color, opacity]
+  return (
+    <mesh>
+      <primitive object={geometry} attach="geometry" />
+      <meshBasicMaterial
+        color={color}
+        transparent
+        opacity={opacity}
+        side={THREE.FrontSide}
+        depthWrite={false}
+      />
+    </mesh>
   )
-
-  return <primitive object={new THREE.Mesh(geometry, material)} />
 }
 
 interface CountryBorderProps {
@@ -109,18 +107,12 @@ function CountryBorder({ positions, color, opacity }: CountryBorderProps) {
     return geo
   }, [positions])
 
-  const material = useMemo(
-    () =>
-      new THREE.LineBasicMaterial({
-        color,
-        transparent: true,
-        opacity,
-        depthWrite: false,
-      }),
-    [color, opacity]
+  return (
+    <lineSegments>
+      <primitive object={geometry} attach="geometry" />
+      <lineBasicMaterial color={color} transparent opacity={opacity} />
+    </lineSegments>
   )
-
-  return <primitive object={new THREE.LineSegments(geometry, material)} />
 }
 
 interface GlobeCountriesProps {
@@ -134,6 +126,13 @@ export function GlobeCountries({ countryRiskMap }: GlobeCountriesProps) {
     return features
       .filter((f) => f.geometry !== null)
       .map((f) => {
+        if (
+          f.geometry.type !== 'Polygon' &&
+          f.geometry.type !== 'MultiPolygon'
+        ) {
+          return null
+        }
+
         const iso3 = f.properties.iso3
         const riskLevel = iso3 ? countryRiskMap[iso3] : undefined
         const isTracked = Boolean(riskLevel)
@@ -165,6 +164,7 @@ export function GlobeCountries({ countryRiskMap }: GlobeCountriesProps) {
           borderOpacity,
         }
       })
+      .filter((c): c is NonNullable<typeof c> => c !== null)
       .filter((c) => c.fillPositions.length > 0)
   }, [countryRiskMap])
 
