@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, Fragment } from 'react'
+import { useMemo, useEffect, Fragment } from 'react'
 import * as THREE from 'three'
 import { getCountryFeatures } from '@/lib/world-data/geo'
 import { latLonToXYZ } from './globe-utils'
@@ -80,6 +80,12 @@ function CountryFill({ positions, color, opacity }: CountryFillProps) {
     return geo
   }, [positions])
 
+  useEffect(() => {
+    return () => {
+      geometry.dispose()
+    }
+  }, [geometry])
+
   return (
     <mesh>
       <primitive object={geometry} attach="geometry" />
@@ -106,6 +112,12 @@ function CountryBorder({ positions, color, opacity }: CountryBorderProps) {
     geo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     return geo
   }, [positions])
+
+  useEffect(() => {
+    return () => {
+      geometry.dispose()
+    }
+  }, [geometry])
 
   return (
     <lineSegments>
