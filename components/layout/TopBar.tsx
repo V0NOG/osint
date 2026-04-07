@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Bell, Search, Clock, RefreshCw } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils/cn'
@@ -56,6 +56,7 @@ export function TopBar() {
 
   const [timeStr, setTimeStr] = useState('')
   const [spinning, setSpinning] = useState(false)
+  const spinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const update = () => {
@@ -74,9 +75,16 @@ export function TopBar() {
   }, [])
 
   const handleRefresh = () => {
+    if (spinTimerRef.current) clearTimeout(spinTimerRef.current)
     setSpinning(true)
-    setTimeout(() => setSpinning(false), 600)
+    spinTimerRef.current = setTimeout(() => setSpinning(false), 600)
   }
+
+  useEffect(() => {
+    return () => {
+      if (spinTimerRef.current) clearTimeout(spinTimerRef.current)
+    }
+  }, [])
 
   return (
     <header
