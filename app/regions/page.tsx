@@ -30,9 +30,10 @@ export default function RegionsPage() {
         {sortedRegions.map((region) => {
           const regionCountries = mockCountries.filter((c) => region.countries.includes(c.id))
           return (
-            <div
+            <Link
               key={region.id}
-              className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)] transition-all duration-150"
+              href={`/regions/${region.slug}`}
+              className="block bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)] transition-all duration-150"
             >
               {/* Region header */}
               <div className="flex items-start justify-between gap-4 mb-3">
@@ -117,7 +118,7 @@ export default function RegionsPage() {
                   </div>
                 </div>
               )}
-            </div>
+            </Link>
           )
         })}
       </div>
