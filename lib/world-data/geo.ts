@@ -22,7 +22,7 @@ export function getCountryFeatures(): CountryFeature[] {
   if (cachedFeatures) return cachedFeatures
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const topology = require('world-atlas/world/110m.json') as Topology<Objects>
+  const topology = require('world-atlas/countries-110m.json') as Topology<Objects>
   const collection = feature(
     topology,
     topology.objects.countries
