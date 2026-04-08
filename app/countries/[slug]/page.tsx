@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, AlertTriangle, Activity, MapPin, Clock, Users } from 'lucide-react'
+import { ArrowLeft, AlertTriangle, Activity, MapPin, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
-import { RiskIndicator } from '@/components/ui/RiskIndicator'
 import { EventCard } from '@/components/event/EventCard'
 import { ForecastCard } from '@/components/forecast/ForecastCard'
 import { Panel } from '@/components/ui/Panel'
@@ -10,7 +9,7 @@ import { mockCountries } from '@/lib/mock-data/countries'
 import { mockEvents } from '@/lib/mock-data/events'
 import { mockForecasts } from '@/lib/mock-data/forecasts'
 import { mockActors } from '@/lib/mock-data/actors'
-import { formatDate } from '@/lib/utils/format'
+import { formatDate, formatNumber } from '@/lib/utils/format'
 import { getRiskColor } from '@/lib/utils/risk'
 
 interface PageProps {
@@ -26,7 +25,7 @@ export async function generateMetadata({ params }: PageProps) {
   return { title: country?.name ?? 'Country' }
 }
 
-const categoryLabels = {
+const categoryLabels: Record<string, string> = {
   political: 'Political',
   military: 'Military',
   economic: 'Economic',
@@ -36,29 +35,25 @@ const categoryLabels = {
 
 function RiskBreakdownBar({ label, score }: { label: string; score: number }) {
   const color =
-    score >= 80
-      ? '#ef4444'
-      : score >= 65
-      ? '#f97316'
-      : score >= 50
-      ? '#f59e0b'
-      : score >= 35
-      ? '#eab308'
-      : '#22c55e'
+    score >= 80 ? '#ef4444'
+    : score >= 65 ? '#f97316'
+    : score >= 50 ? '#f59e0b'
+    : score >= 35 ? '#eab308'
+    : '#22c55e'
 
   return (
-    <div className="flex items-center gap-4">
-      <span className="text-xs font-medium text-[var(--color-text-secondary)] w-24 flex-shrink-0">
+    <div className="flex items-center gap-3">
+      <span className="text-xs text-[var(--color-text-tertiary)] w-24 flex-shrink-0">
         {label}
       </span>
-      <div className="flex-1 h-2 rounded-full bg-white/5 overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${score}%`, backgroundColor: color, opacity: 0.8 }}
+          className="h-full rounded-full"
+          style={{ width: `${score}%`, backgroundColor: color, opacity: 0.85 }}
         />
       </div>
       <span
-        className="text-sm font-bold font-mono tabular-nums w-8 text-right flex-shrink-0"
+        className="text-xs font-bold font-mono tabular-nums w-8 text-right flex-shrink-0"
         style={{ color }}
       >
         {score}
@@ -94,7 +89,7 @@ export default function CountryDetailPage({ params }: PageProps) {
         All Countries
       </Link>
 
-      {/* Hero */}
+      {/* Hero — includes name, score, summary, and risk category bars */}
       <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6 mb-5 relative overflow-hidden">
         {/* Background accent */}
         <div
@@ -102,9 +97,9 @@ export default function CountryDetailPage({ params }: PageProps) {
           style={{ backgroundColor: riskColor }}
         />
 
-        <div className="relative flex items-start justify-between gap-6">
+        {/* Name row */}
+        <div className="relative flex items-start justify-between gap-6 mb-4">
           <div className="flex items-start gap-4">
-            {/* Flag placeholder */}
             <div className="w-14 h-10 rounded-md bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
               <span className="text-sm font-bold text-[var(--color-text-secondary)] font-mono">
                 {country.iso2}
@@ -120,7 +115,6 @@ export default function CountryDetailPage({ params }: PageProps) {
                   <span className="text-xs">{country.capital}</span>
                 </div>
                 <span className="text-[var(--color-text-tertiary)] text-xs">·</span>
-                <span className="text-xs text-[var(--color-text-tertiary)]">{country.iso3}</span>
                 <Badge variant={`risk-${country.riskLevel}`}>
                   {country.riskLevel} risk
                 </Badge>
@@ -153,37 +147,31 @@ export default function CountryDetailPage({ params }: PageProps) {
         </div>
 
         {/* Summary */}
-        <p className="text-sm text-[var(--color-text-secondary)] mt-4 leading-relaxed relative">
+        <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed relative mb-4">
           {country.summary}
         </p>
 
+        {/* Risk category bars — inside the hero */}
+        <div className="relative border-t border-[var(--color-border)] pt-4 space-y-2.5">
+          {Object.entries(country.riskCategories).map(([key, score]) => (
+            <RiskBreakdownBar
+              key={key}
+              label={categoryLabels[key] ?? key}
+              score={score}
+            />
+          ))}
+        </div>
+
         {/* Last updated */}
-        <div className="flex items-center gap-1.5 mt-3 text-[var(--color-text-tertiary)] relative">
+        <div className="flex items-center gap-1.5 mt-4 text-[var(--color-text-tertiary)] relative">
           <Clock className="w-3 h-3" strokeWidth={1.5} />
           <span className="text-[11px]">Updated {formatDate(country.lastUpdated)}</span>
         </div>
       </div>
 
-      {/* Risk breakdown */}
-      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 mb-5">
-        <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-4 flex items-center gap-2">
-          <Activity className="w-4 h-4 text-[var(--color-text-tertiary)]" strokeWidth={1.75} />
-          Risk Breakdown
-        </h2>
-        <div className="space-y-3">
-          {Object.entries(country.riskCategories).map(([key, score]) => (
-            <RiskBreakdownBar
-              key={key}
-              label={categoryLabels[key as keyof typeof categoryLabels]}
-              score={score}
-            />
-          ))}
-        </div>
-      </div>
-
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">
-        {/* Left column */}
+        {/* Left column: events + key actors */}
         <div className="space-y-5">
           {/* Recent events */}
           <section>
@@ -211,37 +199,11 @@ export default function CountryDetailPage({ params }: PageProps) {
             )}
           </section>
 
-          {/* Active forecasts */}
-          <section>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
-                Active Forecasts
-              </h2>
-              <Link
-                href="/forecasts"
-                className="text-[11px] text-[var(--color-accent-blue)] hover:text-blue-300 font-medium transition-colors"
-              >
-                View all →
-              </Link>
-            </div>
-            {relatedForecasts.length > 0 ? (
-              <div className="space-y-2.5">
-                {relatedForecasts.map((forecast) => (
-                  <ForecastCard key={forecast.id} forecast={forecast} variant="compact" />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg p-6 text-center">
-                <p className="text-sm text-[var(--color-text-tertiary)]">No active forecasts</p>
-              </div>
-            )}
-          </section>
-        </div>
-
-        {/* Right column */}
-        <div className="space-y-4">
           {/* Key actors */}
-          <Panel title="Key Actors" subtitle={`${keyActors.length} identified actors`}>
+          <Panel
+            title="Key Actors"
+            subtitle={`${keyActors.length} identified actor${keyActors.length !== 1 ? 's' : ''}`}
+          >
             <div className="divide-y divide-[var(--color-border)]">
               {keyActors.length > 0 ? (
                 keyActors.map((actor) => (
@@ -278,29 +240,69 @@ export default function CountryDetailPage({ params }: PageProps) {
               )}
             </div>
           </Panel>
+        </div>
 
-          {/* What changed placeholder */}
-          <Panel title="What Changed" subtitle="Recent analyst updates">
-            <div className="px-5 py-4">
-              <div className="space-y-3">
-                {[
-                  { date: country.lastUpdated, note: 'Risk assessment updated following latest incident reports.' },
-                  { date: '2026-03-15', note: 'Forecast probability revised based on new intelligence.' },
-                  { date: '2026-03-01', note: 'New events catalogued and linked to country profile.' },
-                ].map((entry, i) => (
-                  <div key={i} className="flex gap-3">
-                    <div className="flex-shrink-0 w-1 self-stretch">
-                      <div className="w-1 h-1 rounded-full bg-[var(--color-border-strong)] mt-1.5" />
-                      {i < 2 && <div className="w-px h-full bg-[var(--color-border)] mx-auto mt-1" />}
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-[var(--color-text-tertiary)] mb-0.5 font-mono">
-                        {formatDate(entry.date)}
-                      </p>
-                      <p className="text-xs text-[var(--color-text-secondary)]">{entry.note}</p>
-                    </div>
-                  </div>
+        {/* Right column: active forecasts + quick stats */}
+        <div className="space-y-4">
+          {/* Active forecasts */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
+                Active Forecasts
+              </h2>
+              <Link
+                href="/forecasts"
+                className="text-[11px] text-[var(--color-accent-blue)] hover:text-blue-300 font-medium transition-colors"
+              >
+                View all →
+              </Link>
+            </div>
+            {relatedForecasts.length > 0 ? (
+              <div className="space-y-2.5">
+                {relatedForecasts.map((forecast) => (
+                  <ForecastCard key={forecast.id} forecast={forecast} variant="compact" />
                 ))}
+              </div>
+            ) : (
+              <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg p-5 text-center">
+                <p className="text-sm text-[var(--color-text-tertiary)]">No active forecasts</p>
+              </div>
+            )}
+          </section>
+
+          {/* Quick stats */}
+          <Panel title="Quick Stats">
+            <div className="px-5 py-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[var(--color-text-tertiary)]">Region</span>
+                <Link
+                  href={`/regions/${country.region}`}
+                  className="text-xs font-medium text-[var(--color-accent-blue)] hover:text-blue-300 transition-colors"
+                >
+                  {country.region.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                </Link>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[var(--color-text-tertiary)]">Capital</span>
+                <span className="text-xs text-[var(--color-text-secondary)]">{country.capital}</span>
+              </div>
+              {country.population && (
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[var(--color-text-tertiary)]">Population</span>
+                  <span className="text-xs font-mono text-[var(--color-text-secondary)]">
+                    {formatNumber(country.population)}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[var(--color-text-tertiary)]">ISO</span>
+                <span className="text-xs font-mono text-[var(--color-text-secondary)]">{country.iso3}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-[var(--color-text-tertiary)]">Updated</span>
+                <span className="text-xs font-mono text-[var(--color-text-secondary)]">
+                  {formatDate(country.lastUpdated)}
+                </span>
               </div>
             </div>
           </Panel>
