@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Target } from 'lucide-react'
+import { Target, Plus } from 'lucide-react'
+import Link from 'next/link'
 import { ForecastCard } from './ForecastCard'
 import { FilterChipBar, FilterDropdown } from '@/components/ui/FilterChipBar'
 import { mockForecasts } from '@/lib/mock-data/forecasts'
@@ -94,7 +95,7 @@ export function ForecastsView() {
   return (
     <div className="p-6 max-w-[1200px] mx-auto">
       {/* Header */}
-      <div className="flex items-start gap-4 mb-4">
+      <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
             <Target className="w-5 h-5 text-[var(--color-text-tertiary)]" strokeWidth={1.75} />
@@ -104,6 +105,13 @@ export function ForecastsView() {
             {mockForecasts.length} structured forecasts — {activeCount} active
           </p>
         </div>
+        <Link
+          href="/forecasts/new"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm text-white font-medium transition-colors flex-shrink-0"
+        >
+          <Plus className="w-4 h-4" strokeWidth={2} />
+          New Forecast
+        </Link>
       </div>
 
       {/* Summary stats */}
