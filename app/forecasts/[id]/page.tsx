@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, ChevronUp, ChevronDown, Minus, BookOpen, Scale, AlertCircle, History, Globe } from 'lucide-react'
+import { ArrowLeft, ChevronUp, ChevronDown, Scale } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Panel } from '@/components/ui/Panel'
 import { EventCard } from '@/components/event/EventCard'
@@ -108,71 +108,48 @@ export default function ForecastDetailPage({ params }: PageProps) {
         <div className="space-y-4">
           {/* Forecast header */}
           <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6">
-            {/* Status + meta */}
-            <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-              <div className="flex items-center gap-2">
-                <Badge variant={`status-${forecast.status}`} size="md">{forecast.status}</Badge>
-                <span className="text-[var(--color-text-tertiary)] text-xs">·</span>
-                <span className="text-xs text-[var(--color-text-tertiary)]">
-                  v{forecast.versionNumber}
-                </span>
-                <span className="text-[var(--color-text-tertiary)] text-xs">·</span>
-                <div className="flex items-center gap-1 text-[var(--color-text-tertiary)]">
-                  <Calendar className="w-3 h-3" strokeWidth={1.5} />
-                  <span className="text-xs">{formatDate(forecast.targetDate)}</span>
-                </div>
-              </div>
-              <span className="text-xs text-[var(--color-text-tertiary)]">
-                Updated {formatDate(forecast.lastUpdated)}
-              </span>
-            </div>
-
-            {/* Big probability + question */}
-            <div className="flex items-start gap-6 mb-4">
-              {/* Probability display */}
-              <div className="flex-shrink-0 text-center">
-                <div className={cn('text-5xl font-bold font-mono tabular-nums leading-none', probColor)}>
-                  {forecast.probability}
-                  <span className="text-3xl">%</span>
-                </div>
-                <div className="text-[11px] text-[var(--color-text-tertiary)] mt-1.5 font-medium uppercase tracking-wider">
-                  Probability
-                </div>
-                <div className="mt-3 w-24">
-                  <ProbabilityBar probability={forecast.probability} />
-                </div>
-              </div>
-
-              {/* Question */}
-              <div className="flex-1 min-w-0">
-                <h1 className="text-lg font-bold text-[var(--color-text-primary)] leading-snug mb-2">
-                  {forecast.title}
-                </h1>
-                <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed italic">
-                  &ldquo;{forecast.question}&rdquo;
-                </p>
-              </div>
-            </div>
-
-            {/* Confidence */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div
-                className={cn(
-                  'inline-flex items-center gap-1.5 px-2.5 py-1 rounded border text-xs font-medium',
-                  confidenceColors[forecast.confidenceLevel]
-                )}
-              >
-                <span className="uppercase tracking-wider text-[10px] font-semibold">
-                  {forecast.confidenceLevel} confidence
-                </span>
-              </div>
-              <div className="text-xs text-[var(--color-text-secondary)]">
+            {/* Status + time horizon badges */}
+            <div className="flex items-center gap-2 mb-3">
+              <Badge variant={`status-${forecast.status}`} size="md">{forecast.status}</Badge>
+              <span className="text-[10px] font-medium text-[var(--color-text-tertiary)] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded px-2 py-0.5 uppercase tracking-wider">
                 {forecast.timeHorizon}
+              </span>
+              <span className="text-xs text-[var(--color-text-tertiary)]">·</span>
+              <span className="text-xs text-[var(--color-text-tertiary)]">Updated {formatDate(forecast.lastUpdated)}</span>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-xl font-bold text-[var(--color-text-primary)] leading-snug mb-2">
+              {forecast.title}
+            </h1>
+
+            {/* Inline probability row */}
+            <div className="flex items-center gap-4 bg-black/20 rounded-lg px-4 py-3 mb-3">
+              <div className="flex-shrink-0">
+                <div className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider mb-0.5">Probability</div>
+                <div className={cn('text-3xl font-bold font-mono tabular-nums leading-none', probColor)}>
+                  {forecast.probability}<span className="text-xl">%</span>
+                </div>
               </div>
-              <div className="text-xs text-[var(--color-text-tertiary)]">
-                {forecast.region}
+              <div className="flex-1 min-w-0">
+                <ProbabilityBar probability={forecast.probability} />
+              </div>
+              <div className="flex-shrink-0 text-right">
+                <div className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider mb-0.5">Confidence</div>
+                <div className={cn('text-sm font-semibold uppercase tracking-wide', confidenceColors[forecast.confidenceLevel].split(' ')[0])}>
+                  {forecast.confidenceLevel}
+                </div>
+              </div>
+              <div className="flex-shrink-0 text-right border-l border-[var(--color-border)] pl-4">
+                <div className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider mb-0.5">Revision</div>
+                <div className="text-sm font-mono text-[var(--color-text-secondary)]">v{forecast.versionNumber}</div>
               </div>
             </div>
+
+            {/* Question */}
+            <p className="text-sm text-[var(--color-text-tertiary)] leading-relaxed italic">
+              &ldquo;{forecast.question}&rdquo;
+            </p>
           </div>
 
           {/* Rationale */}
