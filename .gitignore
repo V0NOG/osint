@@ -7,3 +7,5 @@ build
 coverage
 *.tsbuildinfo
 tsconfig.tsbuildinfotsconfig.tsbuildinfo
+
+/lib/generated/prisma
