@@ -8,7 +8,6 @@ import { mockForecasts } from '@/lib/mock-data/forecasts'
 import { mockEvents } from '@/lib/mock-data/events'
 import { mockCountries } from '@/lib/mock-data/countries'
 import { formatDate } from '@/lib/utils/format'
-import { getProbabilityColor } from '@/lib/utils/risk'
 import { cn } from '@/lib/utils/cn'
 
 interface PageProps {
@@ -25,20 +24,11 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 function ProbabilityBar({ probability }: { probability: number }) {
-  const color =
-    probability >= 70
-      ? '#ef4444'
-      : probability >= 50
-      ? '#f97316'
-      : probability >= 30
-      ? '#f59e0b'
-      : '#22c55e'
-
   return (
     <div className="h-2 rounded-full bg-white/5 overflow-hidden">
       <div
         className="h-full rounded-full transition-all duration-500"
-        style={{ width: `${probability}%`, backgroundColor: color, opacity: 0.8 }}
+        style={{ width: `${probability}%`, background: 'linear-gradient(90deg, #3b82f6, #60a5fa)' }}
       />
     </div>
   )
@@ -67,7 +57,6 @@ export default function ForecastDetailPage({ params }: PageProps) {
   const forecast = mockForecasts.find((f) => f.id === params.id)
   if (!forecast) notFound()
 
-  const probColor = getProbabilityColor(forecast.probability)
   const countries = forecast.countries
     .map((id) => mockCountries.find((c) => c.id === id))
     .filter(Boolean)
@@ -127,7 +116,7 @@ export default function ForecastDetailPage({ params }: PageProps) {
             <div className="flex items-center gap-4 bg-black/20 rounded-lg px-4 py-3 mb-3">
               <div className="flex-shrink-0">
                 <div className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider mb-0.5">Probability</div>
-                <div className={cn('text-3xl font-bold font-mono tabular-nums leading-none', probColor)}>
+                <div className="text-3xl font-bold font-mono tabular-nums leading-none text-blue-400">
                   {forecast.probability}<span className="text-xl">%</span>
                 </div>
               </div>
