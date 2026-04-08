@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ChevronUp, ChevronDown, Scale } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
@@ -29,6 +29,7 @@ function ProbabilityBar({ probability }: { probability: number }) {
   )
 }
 
+// Higher probability of risk = unfavorable, shown in red; lower = favorable, shown in green
 function HistoryDiff({ current, previous }: { current: number; previous: number }) {
   const diff = current - previous
   if (Math.abs(diff) < 1)
@@ -48,11 +49,34 @@ function HistoryDiff({ current, previous }: { current: number; previous: number 
   )
 }
 
+const confidenceTextColors: Record<string, string> = {
+  high: 'text-green-400',
+  medium: 'text-amber-400',
+  low: 'text-red-400',
+}
+
+const evidenceDirectionColors: Record<string, string> = {
+  supporting: 'text-green-400 bg-green-500/8 border-green-500/15',
+  opposing: 'text-red-400 bg-red-500/8 border-red-500/15',
+  neutral: 'text-[var(--color-text-tertiary)] bg-white/3 border-[var(--color-border)]',
+}
+
 export function ForecastDetailView({ forecast, countries, relatedEvents }: ForecastDetailViewProps) {
   const [localStatus, setLocalStatus] = useState(forecast.status)
   const [localHistory, setLocalHistory] = useState<ForecastHistoryEntry[]>(forecast.history)
   const [resolveModalOpen, setResolveModalOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (toast) {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+      toastTimerRef.current = setTimeout(() => setToast(null), 3000)
+    }
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
+    }
+  }, [toast])
 
   const handleResolve = (outcome: ResolveOutcome) => {
     setLocalStatus('resolved')
@@ -66,26 +90,15 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
       },
     ])
     setResolveModalOpen(false)
-    const msg = `Forecast resolved as ${outcome.result.toUpperCase()}`
-    setToast(msg)
-    setTimeout(() => setToast(null), 3000)
+    setToast(`Forecast resolved as ${outcome.result.toUpperCase()}`)
   }
 
-  const sortedHistory = [...localHistory].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  const handleCloseResolveModal = useCallback(() => setResolveModalOpen(false), [])
+
+  const sortedHistory = useMemo(
+    () => [...localHistory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()),
+    [localHistory]
   )
-
-  const confidenceTextColors = {
-    high: 'text-green-400',
-    medium: 'text-amber-400',
-    low: 'text-red-400',
-  }
-
-  const evidenceDirectionColors = {
-    supporting: 'text-green-400 bg-green-500/8 border-green-500/15',
-    opposing: 'text-red-400 bg-red-500/8 border-red-500/15',
-    neutral: 'text-[var(--color-text-tertiary)] bg-white/3 border-[var(--color-border)]',
-  }
 
   return (
     <div className="p-6 max-w-[1100px] mx-auto">
@@ -232,7 +245,7 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
           <Panel title="Revision History" subtitle={`${localHistory.length} versions`}>
             <div className="divide-y divide-[var(--color-border)]">
               {sortedHistory.map((entry, i) => (
-                <div key={i} className="px-5 py-3.5">
+                <div key={entry.date} className="px-5 py-3.5">
                   <div className="flex items-start justify-between gap-3 mb-1">
                     <div className="flex items-center gap-2.5">
                       <span className="text-xs font-mono font-semibold text-[var(--color-text-primary)] tabular-nums">
@@ -371,7 +384,7 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
       <ResolveModal
         forecast={forecast}
         isOpen={resolveModalOpen}
-        onClose={() => setResolveModalOpen(false)}
+        onClose={handleCloseResolveModal}
         onResolve={handleResolve}
       />
 

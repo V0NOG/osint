@@ -103,6 +103,7 @@ export function ResolveModal({ forecast, isOpen, onClose, onResolve }: ResolveMo
           value={analystNote}
           onChange={(e) => setAnalystNote(e.target.value)}
           placeholder="Describe the outcome and how the resolution criteria were satisfied."
+          aria-required="true"
           className="w-full bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-blue-500/50 resize-none leading-relaxed"
         />
       </div>
