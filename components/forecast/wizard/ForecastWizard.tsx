@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
@@ -65,11 +65,11 @@ export function ForecastWizard() {
   const [submitted, setSubmitted] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  const updateDraft = (updates: Partial<ForecastDraft>) => {
+  const updateDraft = useCallback((updates: Partial<ForecastDraft>) => {
     setDraft((prev) => ({ ...prev, ...updates }))
-  }
+  }, [])
 
-  const validateStep = (stepIndex: number): boolean => {
+  const validateStep = useCallback((stepIndex: number): boolean => {
     const newErrors: Record<string, string> = {}
     if (stepIndex === 0) {
       if (!draft.title.trim()) newErrors.title = 'Required'
@@ -87,18 +87,18 @@ export function ForecastWizard() {
     }
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
-  }
+  }, [draft])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!validateStep(step)) return
     setErrors({})
     setStep((s) => s + 1)
-  }
+  }, [draft, step])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     setErrors({})
     setStep((s) => s - 1)
-  }
+  }, [])
 
   if (submitted) {
     return (
@@ -136,7 +136,7 @@ export function ForecastWizard() {
         <div className="flex flex-col gap-1 flex-1">
           {STEPS.map((s, i) => (
             <div
-              key={i}
+              key={s.label}
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg',
                 i === step && 'bg-blue-500/10 border-l-2 border-blue-500 ml-[-1px]',
@@ -198,7 +198,11 @@ export function ForecastWizard() {
             </button>
           ) : (
             <button
-              onClick={() => setSubmitted(true)}
+              onClick={() => {
+                if (!validateStep(step)) return
+                setErrors({})
+                setSubmitted(true)
+              }}
               className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm text-white font-medium transition-colors"
             >
               Create Forecast

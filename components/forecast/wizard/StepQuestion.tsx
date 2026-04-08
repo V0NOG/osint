@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { mockRegions } from '@/lib/mock-data/regions'
 import { mockCountries } from '@/lib/mock-data/countries'
 import { cn } from '@/lib/utils/cn'
@@ -15,9 +15,10 @@ interface StepQuestionProps {
 export function StepQuestion({ draft, onChange, errors }: StepQuestionProps) {
   const [countryFilter, setCountryFilter] = useState('')
 
-  const filteredCountries = mockCountries.filter((c) =>
-    c.name.toLowerCase().includes(countryFilter.toLowerCase())
-  )
+  const filteredCountries = useMemo(() => {
+    const query = countryFilter.toLowerCase()
+    return mockCountries.filter((c) => c.name.toLowerCase().includes(query))
+  }, [countryFilter])
 
   const toggleCountry = (id: string) => {
     const next = draft.countries.includes(id)

@@ -24,7 +24,7 @@ export function StepProbability({ draft, onChange, errors }: StepProbabilityProp
     <div className="space-y-6">
       {/* Probability slider */}
       <div>
-        <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3">
+        <label htmlFor="probability-slider" className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-3">
           Probability
         </label>
         <div className="text-center mb-3">
@@ -34,6 +34,7 @@ export function StepProbability({ draft, onChange, errors }: StepProbabilityProp
           <span className={cn('text-3xl font-bold font-mono', probColorClass)}>%</span>
         </div>
         <input
+          id="probability-slider"
           type="range"
           min={0}
           max={100}
@@ -73,10 +74,11 @@ export function StepProbability({ draft, onChange, errors }: StepProbabilityProp
 
       {/* Rationale */}
       <div>
-        <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
+        <label htmlFor="rationale" className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
           Rationale <span className="text-red-400">*</span>
         </label>
         <textarea
+          id="rationale"
           rows={5}
           value={draft.rationale}
           onChange={(e) => onChange({ rationale: e.target.value })}
@@ -91,10 +93,11 @@ export function StepProbability({ draft, onChange, errors }: StepProbabilityProp
 
       {/* Confidence notes */}
       <div>
-        <label className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
+        <label htmlFor="confidence-notes" className="block text-xs font-semibold text-[var(--color-text-secondary)] uppercase tracking-wider mb-1.5">
           Confidence Notes <span className="text-[var(--color-text-tertiary)] font-normal normal-case">(optional)</span>
         </label>
         <textarea
+          id="confidence-notes"
           rows={3}
           value={draft.confidenceNotes}
           onChange={(e) => onChange({ confidenceNotes: e.target.value })}

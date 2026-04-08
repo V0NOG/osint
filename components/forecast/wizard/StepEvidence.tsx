@@ -41,7 +41,7 @@ export function StepEvidence({ draft, onChange }: StepEvidenceProps) {
     if (!form.title.trim()) return
     const item: DraftEvidence = {
       ...form,
-      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
+      id: crypto.randomUUID(),
       title: form.title.trim(),
       description: form.description.trim(),
     }
