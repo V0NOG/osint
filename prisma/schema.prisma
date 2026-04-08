@@ -1,13 +1,258 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  viewer
+  analyst
+  admin
+}
+
+enum RiskLevel {
+  critical
+  high
+  elevated
+  moderate
+  low
+  minimal
+}
+
+enum ActorType {
+  state
+  non_state
+  international_org
+  individual
+}
+
+enum RiskContribution {
+  high
+  medium
+  low
+}
+
+enum EventType {
+  military
+  diplomatic
+  economic
+  political
+  humanitarian
+  cyber
+}
+
+enum EventSeverity {
+  critical
+  high
+  moderate
+  low
+}
+
+enum SourceReliability {
+  high
+  medium
+  low
+}
+
+enum ForecastStatus {
+  active
+  resolved
+  expired
+  draft
+}
+
+enum ConfidenceLevel {
+  low
+  medium
+  high
+}
+
+enum EvidenceDirection {
+  supporting
+  opposing
+  neutral
+}
+
+enum EvidenceWeight {
+  strong
+  moderate
+  weak
+}
+
+// ─── Auth (NextAuth Prisma Adapter) ───────────────────────────────────────────
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  role         UserRole  @default(viewer)
+  createdAt    DateTime  @default(now())
+  accounts     Account[]
+  sessions     Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── Domain ───────────────────────────────────────────────────────────────────
+
+model Region {
+  id                  String     @id
+  slug                String     @unique
+  name                String
+  overallRiskScore    Int
+  riskLevel           RiskLevel
+  summary             String
+  keyTensions         String[]
+  lastUpdated         DateTime
+  activeEventCount    Int        @default(0)
+  activeForecastCount Int        @default(0)
+  countries           Country[]
+  forecasts           Forecast[]
+}
+
+model Country {
+  id                  String              @id
+  slug                String              @unique
+  name                String
+  iso2                String              @unique
+  iso3                String              @unique
+  regionId            String
+  region              Region              @relation(fields: [regionId], references: [id])
+  overallRiskScore    Int
+  riskLevel           RiskLevel
+  riskCategories      Json
+  summary             String
+  capital             String
+  lastUpdated         DateTime
+  alertCount          Int                 @default(0)
+  activeForecastCount Int                 @default(0)
+  population          BigInt?
+  gdp                 BigInt?
+  keyActors           Actor[]             @relation("CountryActors")
+  forecasts           Forecast[]          @relation("ForecastCountries")
+  events              GeopoliticalEvent[] @relation("EventCountries")
+}
+
+model Actor {
+  id               String              @id
+  name             String
+  type             ActorType
+  role             String
+  riskContribution RiskContribution
+  description      String
+  affiliations     String[]
+  countries        Country[]           @relation("CountryActors")
+  events           GeopoliticalEvent[] @relation("EventActors")
+}
+
+model GeopoliticalEvent {
+  id                  String            @id
+  title               String
+  summary             String
+  eventType           EventType
+  severity            EventSeverity
+  date                DateTime
+  tags                String[]
+  locationDescription String?
+  impactAssessment    String?
+  createdAt           DateTime          @default(now())
+  sources             EventSource[]
+  countries           Country[]         @relation("EventCountries")
+  actors              Actor[]           @relation("EventActors")
+  relatedForecasts    Forecast[]        @relation("ForecastEvents")
+}
+
+model EventSource {
+  id          String            @id @default(cuid())
+  title       String
+  url         String
+  reliability SourceReliability
+  publishedAt DateTime?
+  eventId     String
+  event       GeopoliticalEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Forecast {
+  id                 String                 @id
+  title              String
+  question           String
+  status             ForecastStatus         @default(active)
+  probability        Int
+  confidenceLevel    ConfidenceLevel
+  confidenceNotes    String
+  rationale          String
+  uncertaintyNotes   String
+  timeHorizon        String
+  targetDate         DateTime
+  regionId           String
+  region             Region                 @relation(fields: [regionId], references: [id])
+  resolutionCriteria String
+  versionNumber      Int                    @default(1)
+  tags               String[]
+  createdAt          DateTime               @default(now())
+  lastUpdated        DateTime               @updatedAt
+  history            ForecastHistoryEntry[]
+  evidence           ForecastEvidence[]
+  countries          Country[]              @relation("ForecastCountries")
+  relatedEvents      GeopoliticalEvent[]    @relation("ForecastEvents")
+}
+
+model ForecastHistoryEntry {
+  id              String          @id @default(cuid())
+  forecastId      String
+  date            DateTime
+  probability     Int
+  confidenceLevel ConfidenceLevel
+  changeReason    String
+  analystNote     String?
+  forecast        Forecast        @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+}
+
+model ForecastEvidence {
+  id          String            @id @default(cuid())
+  forecastId  String
+  title       String
+  description String
+  direction   EvidenceDirection
+  weight      EvidenceWeight
+  sourceUrl   String?
+  addedAt     DateTime          @default(now())
+  forecast    Forecast          @relation(fields: [forecastId], references: [id], onDelete: Cascade)
 }
