@@ -11,7 +11,7 @@ import { mockForecasts } from '@/lib/mock-data/forecasts'
 import { mockActors } from '@/lib/mock-data/actors'
 import { mockRegions } from '@/lib/mock-data/regions'
 import { formatDate, formatNumber } from '@/lib/utils/format'
-import { getRiskColor } from '@/lib/utils/risk'
+import { getRiskColor, scoreToRiskLevel } from '@/lib/utils/risk'
 
 interface PageProps {
   params: { slug: string }
@@ -35,12 +35,7 @@ const categoryLabels: Record<string, string> = {
 }
 
 function RiskBreakdownBar({ label, score }: { label: string; score: number }) {
-  const color =
-    score >= 80 ? '#ef4444'
-    : score >= 65 ? '#f97316'
-    : score >= 50 ? '#f59e0b'
-    : score >= 35 ? '#eab308'
-    : '#22c55e'
+  const color = getRiskColor(scoreToRiskLevel(score))
 
   return (
     <div className="flex items-center gap-3">

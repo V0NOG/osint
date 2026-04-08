@@ -59,7 +59,7 @@ export default function ForecastDetailPage({ params }: PageProps) {
 
   const countries = forecast.countries
     .map((id) => mockCountries.find((c) => c.id === id))
-    .filter(Boolean)
+    .filter((c): c is (typeof mockCountries)[number] => c !== undefined)
 
   const relatedEvents = mockEvents
     .filter((e) => forecast.relatedEvents?.includes(e.id))
@@ -68,12 +68,6 @@ export default function ForecastDetailPage({ params }: PageProps) {
   const sortedHistory = [...forecast.history].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )
-
-  const confidenceColors = {
-    high: 'text-green-400 bg-green-500/10 border-green-500/20',
-    medium: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-    low: 'text-red-400 bg-red-500/10 border-red-500/20',
-  }
 
   const confidenceTextColors = {
     high: 'text-green-400',
@@ -291,7 +285,7 @@ export default function ForecastDetailPage({ params }: PageProps) {
           {countries.length > 0 && (
             <Panel title="Countries">
               <div className="divide-y divide-[var(--color-border)]">
-                {countries.map((country) => country && (
+                {countries.map((country) => (
                   <Link
                     key={country.id}
                     href={`/countries/${country.slug}`}

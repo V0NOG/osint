@@ -81,9 +81,9 @@ export default function RegionsPage() {
                     Key Tensions
                   </h3>
                   <div className="flex flex-wrap gap-1.5">
-                    {region.keyTensions.map((tension, i) => (
+                    {region.keyTensions.map((tension) => (
                       <span
-                        key={i}
+                        key={tension}
                         className="text-[11px] px-2 py-1 rounded bg-[var(--color-bg-elevated)] border border-[var(--color-border)] text-[var(--color-text-secondary)]"
                       >
                         {tension}
