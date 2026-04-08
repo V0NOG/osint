@@ -17,9 +17,9 @@ interface SingleArcProps {
 }
 
 function SingleArc({ arc, phaseOffset }: SingleArcProps) {
-  const matRef = useRef<THREE.LineDashedMaterial>(null)
+  const matRef = useRef<THREE.LineDashedMaterial | null>(null)
 
-  const { lineObj, lineLength } = useMemo(() => {
+  const { lineObj } = useMemo(() => {
     const start = new THREE.Vector3(...latLonToXYZ(arc.startLat, arc.startLon, GLOBE_RADIUS))
     const end   = new THREE.Vector3(...latLonToXYZ(arc.endLat,   arc.endLon,   GLOBE_RADIUS))
 
@@ -45,21 +45,22 @@ function SingleArc({ arc, phaseOffset }: SingleArcProps) {
 
     const line = new THREE.Line(geo, mat)
     line.computeLineDistances()
+    matRef.current = mat
 
-    return { lineObj: line, lineLength: len }
+    return { lineObj: line }
   }, [arc])
 
   useEffect(() => {
     return () => {
       lineObj.geometry.dispose()
-      ;(lineObj.material as THREE.LineDashedMaterial).dispose()
+      matRef.current?.dispose()
     }
   }, [lineObj])
 
   useFrame(({ clock }) => {
-    const mat = lineObj.material as THREE.LineDashedMaterial
+    if (!matRef.current) return
     const t = clock.getElapsedTime()
-    mat.opacity =
+    matRef.current.opacity =
       (arc.intensity ?? 1) * (0.5 + 0.3 * Math.sin(t * 1.5 + phaseOffset))
   })
 
