@@ -9,6 +9,7 @@ import { mockCountries } from '@/lib/mock-data/countries'
 import { mockEvents } from '@/lib/mock-data/events'
 import { mockForecasts } from '@/lib/mock-data/forecasts'
 import { mockActors } from '@/lib/mock-data/actors'
+import { mockRegions } from '@/lib/mock-data/regions'
 import { formatDate, formatNumber } from '@/lib/utils/format'
 import { getRiskColor } from '@/lib/utils/risk'
 
@@ -48,7 +49,7 @@ function RiskBreakdownBar({ label, score }: { label: string; score: number }) {
       </span>
       <div className="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden">
         <div
-          className="h-full rounded-full"
+          className="h-full rounded-full transition-all duration-500"
           style={{ width: `${score}%`, backgroundColor: color, opacity: 0.85 }}
         />
       </div>
@@ -75,6 +76,8 @@ export default function CountryDetailPage({ params }: PageProps) {
     .slice(0, 3)
 
   const keyActors = mockActors.filter((a) => country.keyActors.includes(a.id))
+
+  const regionData = mockRegions.find((r) => r.id === country.region)
 
   const riskColor = getRiskColor(country.riskLevel)
 
@@ -279,7 +282,7 @@ export default function CountryDetailPage({ params }: PageProps) {
                   href={`/regions/${country.region}`}
                   className="text-xs font-medium text-[var(--color-accent-blue)] hover:text-blue-300 transition-colors"
                 >
-                  {country.region.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                  {regionData?.name ?? country.region}
                 </Link>
               </div>
               <div className="flex items-center justify-between">
@@ -297,12 +300,6 @@ export default function CountryDetailPage({ params }: PageProps) {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[var(--color-text-tertiary)]">ISO</span>
                 <span className="text-xs font-mono text-[var(--color-text-secondary)]">{country.iso3}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-[var(--color-text-tertiary)]">Updated</span>
-                <span className="text-xs font-mono text-[var(--color-text-secondary)]">
-                  {formatDate(country.lastUpdated)}
-                </span>
               </div>
             </div>
           </Panel>
