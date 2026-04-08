@@ -93,7 +93,7 @@ export function ForecastWizard() {
     if (!validateStep(step)) return
     setErrors({})
     setStep((s) => s + 1)
-  }, [draft, step])
+  }, [validateStep, step])
 
   const handleBack = useCallback(() => {
     setErrors({})
