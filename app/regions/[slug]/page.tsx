@@ -7,7 +7,8 @@ import { mockRegions } from '@/lib/mock-data/regions'
 import { mockCountries } from '@/lib/mock-data/countries'
 import { mockForecasts } from '@/lib/mock-data/forecasts'
 import { formatDate } from '@/lib/utils/format'
-import { getRiskColor } from '@/lib/utils/risk'
+import { getRiskColor, getProbabilityColor } from '@/lib/utils/risk'
+import type { Country } from '@/lib/types'
 
 interface PageProps {
   params: { slug: string }
@@ -28,7 +29,7 @@ export default function RegionDetailPage({ params }: PageProps) {
 
   const memberCountries = region.countries
     .map((id) => mockCountries.find((c) => c.id === id))
-    .filter(Boolean)
+    .filter((c): c is Country => c !== undefined)
 
   const activeForecasts = mockForecasts.filter((f) => f.region === region.id)
 
@@ -82,13 +83,13 @@ export default function RegionDetailPage({ params }: PageProps) {
 
         {/* Key tensions */}
         {region.keyTensions.length > 0 && (
-          <div className="relative">
+          <div className="relative border-t border-[var(--color-border)] pt-4">
             <h3 className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider mb-2">
               Key Tensions
             </h3>
             <ul className="space-y-1.5">
-              {region.keyTensions.map((tension, i) => (
-                <li key={i} className="flex items-start gap-2">
+              {region.keyTensions.map((tension) => (
+                <li key={tension} className="flex items-start gap-2">
                   <span
                     className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
                     style={{ backgroundColor: riskColor, opacity: 0.7 }}
@@ -120,7 +121,7 @@ export default function RegionDetailPage({ params }: PageProps) {
               Member Countries
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {memberCountries.map((country) => country && (
+              {memberCountries.map((country) => (
                 <Link
                   key={country.id}
                   href={`/countries/${country.slug}`}
@@ -215,7 +216,7 @@ export default function RegionDetailPage({ params }: PageProps) {
                     <p className="text-xs font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors leading-snug line-clamp-2 flex-1">
                       {forecast.title}
                     </p>
-                    <span className="text-sm font-bold font-mono tabular-nums flex-shrink-0 text-blue-400">
+                    <span className={`text-sm font-bold font-mono tabular-nums flex-shrink-0 ${getProbabilityColor(forecast.probability)}`}>
                       {forecast.probability}%
                     </span>
                   </Link>
