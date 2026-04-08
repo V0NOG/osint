@@ -27,8 +27,8 @@ function ProbabilityBar({ probability }: { probability: number }) {
   return (
     <div className="h-2 rounded-full bg-white/5 overflow-hidden">
       <div
-        className="h-full rounded-full transition-all duration-500"
-        style={{ width: `${probability}%`, background: 'linear-gradient(90deg, #3b82f6, #60a5fa)' }}
+        className="h-full rounded-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-500"
+        style={{ width: `${probability}%` }}
       />
     </div>
   )
@@ -73,6 +73,12 @@ export default function ForecastDetailPage({ params }: PageProps) {
     high: 'text-green-400 bg-green-500/10 border-green-500/20',
     medium: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     low: 'text-red-400 bg-red-500/10 border-red-500/20',
+  }
+
+  const confidenceTextColors = {
+    high: 'text-green-400',
+    medium: 'text-amber-400',
+    low: 'text-red-400',
   }
 
   const evidenceDirectionColors = {
@@ -125,7 +131,7 @@ export default function ForecastDetailPage({ params }: PageProps) {
               </div>
               <div className="flex-shrink-0 text-right">
                 <div className="text-[10px] text-[var(--color-text-tertiary)] uppercase tracking-wider mb-0.5">Confidence</div>
-                <div className={cn('text-sm font-semibold uppercase tracking-wide', confidenceColors[forecast.confidenceLevel].split(' ')[0])}>
+                <div className={cn('text-sm font-semibold uppercase tracking-wide', confidenceTextColors[forecast.confidenceLevel])}>
                   {forecast.confidenceLevel}
                 </div>
               </div>
