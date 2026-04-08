@@ -279,7 +279,7 @@ export default function CountryDetailPage({ params }: PageProps) {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[var(--color-text-tertiary)]">Region</span>
                 <Link
-                  href={`/regions/${country.region}`}
+                  href={`/regions/${regionData?.slug ?? country.region}`}
                   className="text-xs font-medium text-[var(--color-accent-blue)] hover:text-blue-300 transition-colors"
                 >
                   {regionData?.name ?? country.region}
