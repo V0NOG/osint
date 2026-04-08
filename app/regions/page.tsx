@@ -101,19 +101,18 @@ export default function RegionsPage() {
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {regionCountries.map((country) => (
-                      <Link
+                      <span
                         key={country.id}
-                        href={`/countries/${country.slug}`}
-                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-[var(--color-bg-elevated)] border border-[var(--color-border)] hover:border-[var(--color-border-strong)] transition-all duration-150 group"
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-md bg-[var(--color-bg-elevated)] border border-[var(--color-border)]"
                       >
-                        <span className="text-[10px] font-bold font-mono text-[var(--color-text-tertiary)] group-hover:text-[var(--color-text-secondary)]">
+                        <span className="text-[10px] font-bold font-mono text-[var(--color-text-tertiary)]">
                           {country.iso2}
                         </span>
-                        <span className="text-xs font-medium text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
+                        <span className="text-xs font-medium text-[var(--color-text-secondary)]">
                           {country.name}
                         </span>
                         <RiskIndicator level={country.riskLevel} size="xs" variant="dot" />
-                      </Link>
+                      </span>
                     ))}
                   </div>
                 </div>
