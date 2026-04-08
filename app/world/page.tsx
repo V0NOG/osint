@@ -66,14 +66,14 @@ export default function WorldPage() {
         {/* Globe + forecasts column */}
         <div className="flex flex-col overflow-y-auto">
           {/* Globe area */}
-          <div className="flex-1 min-h-[480px] p-6 pb-0">
+          <div className="flex-1 min-h-[480px] p-6 pb-0 flex flex-col">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h2 className="text-base font-semibold text-[var(--color-text-primary)]">
                   World Overview
                 </h2>
                 <p className="text-xs text-[var(--color-text-tertiary)] mt-0.5">
-                  Live geopolitical risk assessment — {new Date('2026-04-01').toLocaleDateString('en-US', { dateStyle: 'long' })}
+                  Live geopolitical risk assessment — {new Date().toLocaleDateString('en-US', { dateStyle: 'long' })}
                 </p>
               </div>
               <div className="flex items-center gap-2">
@@ -92,7 +92,9 @@ export default function WorldPage() {
             </div>
 
             {/* Globe */}
-            <WorldGlobeSection countries={mockCountries} />
+            <div className="flex-1 min-h-0">
+              <WorldGlobeSection countries={mockCountries} />
+            </div>
           </div>
 
           {/* Region risk summary strip */}
