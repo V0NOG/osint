@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server'
 import { runIngestionPipeline, type IngestionSource } from '@/lib/ingestion/pipeline'
+import { rateLimit, getClientIp } from '@/lib/utils/rate-limit'
 
-const VALID_SOURCES: IngestionSource[] = ['rss', 'gdelt', 'acled', 'all']
+const VALID_SOURCES: IngestionSource[] = ['rss', 'gdelt', 'ucdp', 'reliefweb', 'cyber', 'trade', 'all']
 
 /**
- * POST /api/ingest?source=rss|gdelt|acled|all
+ * POST /api/ingest?source=rss|gdelt|ucdp|reliefweb|cyber|trade|all
  *
  * Protected by INGEST_API_KEY env var.
  * Pass the key as: Authorization: Bearer <key>
  */
 export async function POST(req: Request) {
+  const ip = getClientIp(req)
+  if (!rateLimit(`ingest:${ip}`, 5, 60_000)) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   // API key guard
   const apiKey = process.env.INGEST_API_KEY
   if (apiKey) {

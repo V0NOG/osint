@@ -1,4 +1,5 @@
 export type SourceBias = 'left' | 'center-left' | 'center' | 'center-right' | 'right'
+export type FeedDomain = 'general' | 'cyber' | 'trade' | 'humanitarian' | 'conflict'
 
 export interface FeedConfig {
   name: string
@@ -6,10 +7,11 @@ export interface FeedConfig {
   key: string
   reliability: 'high' | 'medium' | 'low'
   tags: string[]
+  domain?: FeedDomain
 }
 
 // Lookup by source key — used at display time without needing a DB field
-export const SOURCE_BIAS_MAP: Record<string, SourceBias> = {
+export const SOURCE_BIAS_MAP: Record<string, SourceBias | undefined> = {
   'reuters-world':    'center',
   'bbc-world':        'center-left',
   'aljazeera':        'center-left',
@@ -218,6 +220,168 @@ export const RSS_FEEDS: FeedConfig[] = [
     reliability: 'medium',
     tags: ['south-asia', 'india'],
   },
+
+  // ─── Alerts & structured data via RSS ─────────────────────────────────────
+  {
+    name: 'GDACS Global Alerts',
+    url: 'https://www.gdacs.org/xml/rss_24h.xml',
+    key: 'gdacs',
+    reliability: 'high',
+    tags: ['gdacs', 'disaster', 'alert', 'conflict'],
+    domain: 'conflict',
+  },
+  {
+    name: 'UN News — Peace & Security',
+    url: 'https://news.un.org/feed/subscribe/en/news/topic/peace-and-security/feed/rss.xml',
+    key: 'un-peace',
+    reliability: 'high',
+    tags: ['un', 'peacekeeping', 'security'],
+    domain: 'conflict',
+  },
+  {
+    name: 'UN News — Humanitarian Aid',
+    url: 'https://news.un.org/feed/subscribe/en/news/topic/humanitarian-aid/feed/rss.xml',
+    key: 'un-humanitarian',
+    reliability: 'high',
+    tags: ['un', 'humanitarian', 'aid'],
+    domain: 'humanitarian',
+  },
+  {
+    name: 'ICRC (Red Cross)',
+    url: 'https://www.icrc.org/en/rss/news',
+    key: 'icrc',
+    reliability: 'high',
+    tags: ['humanitarian', 'red-cross', 'conflict'],
+    domain: 'humanitarian',
+  },
+  {
+    name: 'MSF (Doctors Without Borders)',
+    url: 'https://www.msf.org/rss.xml',
+    key: 'msf',
+    reliability: 'high',
+    tags: ['humanitarian', 'msf', 'crisis'],
+    domain: 'humanitarian',
+  },
+]
+
+// ─── Cyber intelligence feeds ─────────────────────────────────────────────────
+
+export const CYBER_FEEDS: FeedConfig[] = [
+  {
+    name: 'The Record (Recorded Future)',
+    url: 'https://therecord.media/feed/',
+    key: 'the-record',
+    reliability: 'high',
+    tags: ['cyber', 'apt', 'threat-intel'],
+    domain: 'cyber',
+  },
+  {
+    name: 'CyberScoop',
+    url: 'https://cyberscoop.com/feed/',
+    key: 'cyberscoop',
+    reliability: 'high',
+    tags: ['cyber', 'policy', 'government'],
+    domain: 'cyber',
+  },
+  {
+    name: 'Krebs on Security',
+    url: 'https://krebsonsecurity.com/feed/',
+    key: 'krebs',
+    reliability: 'high',
+    tags: ['cyber', 'breach', 'crime'],
+    domain: 'cyber',
+  },
+  {
+    name: 'Dark Reading',
+    url: 'https://www.darkreading.com/rss.xml',
+    key: 'dark-reading',
+    reliability: 'medium',
+    tags: ['cyber', 'vulnerability', 'threat'],
+    domain: 'cyber',
+  },
+  {
+    name: 'Bleeping Computer',
+    url: 'https://www.bleepingcomputer.com/feed/',
+    key: 'bleeping-computer',
+    reliability: 'medium',
+    tags: ['cyber', 'ransomware', 'malware'],
+    domain: 'cyber',
+  },
+  {
+    name: 'CISA Current Activity',
+    url: 'https://www.cisa.gov/uscert/ncas/current-activity.xml',
+    key: 'cisa',
+    reliability: 'high',
+    tags: ['cyber', 'cisa', 'advisory', 'vulnerability'],
+    domain: 'cyber',
+  },
+  {
+    name: 'Graham Cluley (Security)',
+    url: 'https://grahamcluley.com/feed/',
+    key: 'graham-cluley',
+    reliability: 'high',
+    tags: ['cyber', 'threat-intel', 'analysis'],
+    domain: 'cyber',
+  },
+  {
+    name: 'Troy Hunt (Have I Been Pwned)',
+    url: 'https://www.troyhunt.com/rss/',
+    key: 'troy-hunt',
+    reliability: 'high',
+    tags: ['cyber', 'breach', 'data-leak'],
+    domain: 'cyber',
+  },
+]
+
+// ─── Trade & economic intelligence feeds ─────────────────────────────────────
+
+export const TRADE_FEEDS: FeedConfig[] = [
+  {
+    name: 'WTO News',
+    url: 'https://www.wto.org/english/news_e/rss_e/rss_news_e.xml',
+    key: 'wto',
+    reliability: 'high',
+    tags: ['trade', 'wto', 'tariff', 'policy'],
+    domain: 'trade',
+  },
+  {
+    name: 'IMF News',
+    url: 'https://www.imf.org/en/news/rss',
+    key: 'imf',
+    reliability: 'high',
+    tags: ['trade', 'imf', 'economy', 'finance'],
+    domain: 'trade',
+  },
+  {
+    name: 'Financial Times World',
+    url: 'https://www.ft.com/?format=rss',
+    key: 'ft-world',
+    reliability: 'high',
+    tags: ['trade', 'finance', 'markets', 'economics'],
+    domain: 'trade',
+  },
+  {
+    name: 'Wall Street Journal World',
+    url: 'https://feeds.a.dj.com/rss/RSSWorldNews.xml',
+    key: 'wsj-world',
+    reliability: 'high',
+    tags: ['trade', 'markets', 'economics', 'policy'],
+    domain: 'trade',
+  },
+  {
+    name: 'Politico EU',
+    url: 'https://www.politico.eu/rss',
+    key: 'politico-eu',
+    reliability: 'high',
+    tags: ['trade', 'europe', 'policy', 'regulation'],
+    domain: 'trade',
+  },
+]
+
+export const ALL_RSS_FEEDS: FeedConfig[] = [
+  ...RSS_FEEDS,
+  ...CYBER_FEEDS,
+  ...TRADE_FEEDS,
 ]
 
 // Reverse lookup: source display name → bias (for UI display without needing DB field)

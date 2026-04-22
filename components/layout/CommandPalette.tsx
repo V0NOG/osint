@@ -12,6 +12,7 @@ import {
   Map,
   Star,
   Database,
+  Rss,
   Loader2,
   type LucideIcon,
 } from 'lucide-react'
@@ -37,6 +38,7 @@ const PAGE_RESULTS: PaletteResult[] = [
   { id: 'page-events', group: 'pages', label: 'Events', href: '/events', Icon: Zap },
   { id: 'page-forecasts', group: 'pages', label: 'Forecasts', href: '/forecasts', Icon: Target },
   { id: 'page-watchlist', group: 'pages', label: 'Watchlist', href: '/watchlist', Icon: Star },
+  { id: 'page-sources', group: 'pages', label: 'Sources', href: '/sources', Icon: Rss },
   { id: 'page-admin', group: 'pages', label: 'Ingestion Control', href: '/admin', Icon: Database },
   { id: 'page-settings', group: 'pages', label: 'Settings', href: '/settings', Icon: Settings },
 ]

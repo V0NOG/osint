@@ -6,7 +6,6 @@ import { latLonToXYZ } from './globe-utils'
 import { GLOBE_RADIUS } from './GlobeSphere'
 import type { GlobeArc } from './globe-types'
 
-const ARC_ELEVATION = GLOBE_RADIUS * 0.45
 const ARC_POINTS    = 60
 const ARC_DASH_SIZE = 0.04
 const ARC_GAP_SIZE  = 0.02
@@ -23,8 +22,26 @@ function SingleArc({ arc, phaseOffset }: SingleArcProps) {
     const start = new THREE.Vector3(...latLonToXYZ(arc.startLat, arc.startLon, GLOBE_RADIUS))
     const end   = new THREE.Vector3(...latLonToXYZ(arc.endLat,   arc.endLon,   GLOBE_RADIUS))
 
-    const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5)
-    mid.normalize().multiplyScalar(GLOBE_RADIUS + ARC_ELEVATION)
+    const angle = start.angleTo(end)
+    let midDir: THREE.Vector3
+    if (angle < 0.01) {
+      midDir = new THREE.Vector3().addVectors(start, end).normalize()
+    } else if (angle > Math.PI - 0.01) {
+      // Antipodal: pick an arbitrary perpendicular axis
+      const perp = Math.abs(start.y) < 0.9
+        ? new THREE.Vector3(0, 1, 0)
+        : new THREE.Vector3(1, 0, 0)
+      midDir = new THREE.Vector3().crossVectors(start, perp).normalize()
+    } else {
+      const sinA = Math.sin(angle)
+      midDir = new THREE.Vector3()
+        .addScaledVector(start, Math.sin(0.5 * angle) / sinA)
+        .addScaledVector(end,   Math.sin(0.5 * angle) / sinA)
+        .normalize()
+    }
+    // Scale arc height by angular distance so distant arcs clear the globe
+    const elevation = GLOBE_RADIUS * (0.35 + 0.85 * (angle / Math.PI))
+    const mid = midDir.multiplyScalar(GLOBE_RADIUS + elevation)
 
     const curve  = new THREE.QuadraticBezierCurve3(start, mid, end)
     const points = curve.getPoints(ARC_POINTS)

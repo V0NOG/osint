@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   Database,
   Users,
+  Rss,
   ChevronRight,
   ChevronLeft,
   type LucideIcon,
@@ -39,6 +40,7 @@ const primaryNav: NavItem[] = [
 ]
 
 const adminNav: NavItem[] = [
+  { label: 'Sources', href: '/sources', icon: Rss },
   { label: 'Ingestion', href: '/admin', icon: Database },
   { label: 'Settings', href: '/settings', icon: Settings },
 ]

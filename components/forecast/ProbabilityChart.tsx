@@ -78,12 +78,26 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Array<
 
 export function ProbabilityChart({ history }: ProbabilityChartProps) {
   if (history.length < 2) {
+    const entry = history[0]
     return (
-      <Panel title="Probability History" subtitle="No chart available">
-        <div className="px-5 py-8 text-center">
-          <p className="text-xs text-[var(--color-text-tertiary)]">
-            Not enough history to chart
-          </p>
+      <Panel title="Probability History" subtitle="Initial estimate — history builds after updates">
+        <div className="px-5 py-6 flex items-center gap-6">
+          <div>
+            <div className="text-4xl font-bold font-mono text-blue-400">
+              {entry?.probability ?? '—'}%
+            </div>
+            <div
+              className="text-xs mt-1 font-semibold uppercase tracking-wide"
+              style={{ color: entry ? (CONFIDENCE_COLORS[entry.confidenceLevel] ?? '#9ca3af') : '#9ca3af' }}
+            >
+              {entry?.confidenceLevel ?? '—'} confidence
+            </div>
+          </div>
+          {entry?.changeReason && (
+            <p className="text-xs text-[var(--color-text-secondary)] leading-relaxed flex-1">
+              {entry.changeReason}
+            </p>
+          )}
         </div>
       </Panel>
     )

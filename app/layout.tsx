@@ -37,6 +37,14 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Apply saved theme before first paint to avoid flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('geopol:theme');if(t==='light')document.documentElement.dataset.theme='light';}catch(e){}`,
+          }}
+        />
+      </head>
       <body suppressHydrationWarning>
         <AppShell>{children}</AppShell>
       </body>

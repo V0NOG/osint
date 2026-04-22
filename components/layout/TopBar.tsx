@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Bell, Search, Clock, RefreshCw } from 'lucide-react'
-import { usePathname } from 'next/navigation'
+import { Bell, Search, Clock, RefreshCw, Sun, Moon } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils/cn'
 import { useCommandPalette } from '@/contexts/command-palette'
 import { useAlertDrawer } from '@/contexts/alert-drawer'
+import { useTheme } from '@/contexts/theme'
 
 // Static section labels
 const SECTION_LABELS: Record<string, string> = {
@@ -52,12 +53,21 @@ function resolvePageMeta(pathname: string): { title: string; breadcrumbs: string
 
 export function TopBar() {
   const pathname = usePathname()
+  const router = useRouter()
   const meta = resolvePageMeta(pathname)
   const { openPalette } = useCommandPalette()
   const { openDrawer, unreadCount } = useAlertDrawer()
+  const { theme, toggle: toggleTheme } = useTheme()
+
+  const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const tzAbbr = new Date()
+    .toLocaleTimeString('en-US', { timeZoneName: 'short', timeZone: localTz })
+    .split(' ')
+    .pop() ?? localTz
 
   const [timeStr, setTimeStr] = useState('')
   const [spinning, setSpinning] = useState(false)
+  const [refreshed, setRefreshed] = useState(false)
   const spinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -67,19 +77,24 @@ export function TopBar() {
           hour: '2-digit',
           minute: '2-digit',
           hour12: false,
-          timeZone: 'UTC',
+          timeZone: localTz,
         })
       )
     }
     update()
     const id = setInterval(update, 60_000)
     return () => clearInterval(id)
-  }, [])
+  }, [localTz])
 
   const handleRefresh = () => {
     if (spinTimerRef.current) clearTimeout(spinTimerRef.current)
     setSpinning(true)
-    spinTimerRef.current = setTimeout(() => setSpinning(false), 600)
+    router.refresh()
+    spinTimerRef.current = setTimeout(() => {
+      setSpinning(false)
+      setRefreshed(true)
+      setTimeout(() => setRefreshed(false), 2000)
+    }, 800)
   }
 
   useEffect(() => {
@@ -143,24 +158,49 @@ export function TopBar() {
         {/* Clock */}
         <div className="flex items-center gap-1.5 text-[var(--color-text-tertiary)]">
           <Clock className="w-3 h-3" strokeWidth={1.5} />
-          <span className="text-[10px] font-mono">{timeStr} UTC</span>
+          <span className="text-[10px] font-mono">{timeStr} {tzAbbr}</span>
         </div>
 
-        {/* Refresh */}
+        {/* Theme toggle */}
         <button
-          onClick={handleRefresh}
+          onClick={toggleTheme}
           className={cn(
             'p-1.5 rounded-md transition-colors duration-150',
             'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]',
             'hover:bg-[var(--color-bg-elevated)]'
           )}
-          title="Refresh data"
+          title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         >
-          <RefreshCw
-            className={cn('w-3.5 h-3.5', spinning && 'animate-spin')}
-            strokeWidth={1.75}
-          />
+          {theme === 'dark'
+            ? <Sun className="w-3.5 h-3.5" strokeWidth={1.75} />
+            : <Moon className="w-3.5 h-3.5" strokeWidth={1.75} />
+          }
         </button>
+
+        {/* Refresh */}
+        <div className="flex items-center gap-1.5">
+          {refreshed && (
+            <span className="text-[10px] text-green-400 animate-fade-in font-medium">
+              Updated
+            </span>
+          )}
+          <button
+            onClick={handleRefresh}
+            className={cn(
+              'p-1.5 rounded-md transition-colors duration-150',
+              'text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)]',
+              'hover:bg-[var(--color-bg-elevated)]',
+              refreshed && 'text-green-400'
+            )}
+            title="Refresh data"
+            disabled={spinning}
+          >
+            <RefreshCw
+              className={cn('w-3.5 h-3.5', spinning && 'animate-spin')}
+              strokeWidth={1.75}
+            />
+          </button>
+        </div>
 
         {/* Alerts bell */}
         <button

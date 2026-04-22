@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/Badge'
 import { getRecentEvents } from '@/lib/db/events'
 import { IngestionPanel } from '@/components/admin/IngestionPanel'
 import { ForecastGenerationPanel } from '@/components/admin/ForecastGenerationPanel'
+import { ResetPanel } from '@/components/admin/ResetPanel'
 import Link from 'next/link'
 import { formatRelativeDate } from '@/lib/utils/format'
 
@@ -88,6 +89,17 @@ export default async function AdminPage() {
             <ForecastGenerationPanel />
           </div>
 
+          {/* Danger zone */}
+          <div>
+            <h2 className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">
+              Danger Zone
+            </h2>
+            <p className="text-xs text-[var(--color-text-secondary)] mb-4">
+              Wipe ingested events and generated forecasts to start fresh.
+            </p>
+            <ResetPanel />
+          </div>
+
           {/* Setup instructions */}
           <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5">
             <h3 className="text-xs font-semibold text-[var(--color-text-primary)] uppercase tracking-wider mb-3">
@@ -104,16 +116,6 @@ export default async function AdminPage() {
                   key: 'ANTHROPIC_API_KEY',
                   desc: 'Required for AI forecast generation — get from console.anthropic.com',
                   required: true,
-                },
-                {
-                  key: 'ACLED_EMAIL',
-                  desc: 'Email for ACLED OAuth access (acleddata.com)',
-                  required: false,
-                },
-                {
-                  key: 'ACLED_PASSWORD',
-                  desc: 'Password for ACLED OAuth token endpoint',
-                  required: false,
                 },
               ].map((env) => (
                 <div

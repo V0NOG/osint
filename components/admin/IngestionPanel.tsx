@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Play, RefreshCw, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
-type IngestionSource = 'rss' | 'gdelt' | 'acled' | 'all'
+type IngestionSource = 'rss' | 'gdelt' | 'ucdp' | 'reliefweb' | 'cyber' | 'trade' | 'all'
 
 interface IngestionResult {
   source: string
@@ -33,8 +33,18 @@ interface SourceConfig {
 const SOURCES: SourceConfig[] = [
   {
     key: 'rss',
-    label: 'RSS Feeds',
-    description: 'Reuters World, BBC World, Al Jazeera, Foreign Policy, Defense One',
+    label: 'RSS (General)',
+    description: 'Reuters, BBC, Al Jazeera, Foreign Policy, Defense One, regional outlets',
+  },
+  {
+    key: 'cyber',
+    label: 'RSS (Cyber)',
+    description: 'The Record, CyberScoop, Krebs, Dark Reading, CISA, Risky Business',
+  },
+  {
+    key: 'trade',
+    label: 'RSS (Trade)',
+    description: 'WTO, IMF, UNCTAD, PIIE, S&P Commodities, East Asia Forum',
   },
   {
     key: 'gdelt',
@@ -42,11 +52,14 @@ const SOURCES: SourceConfig[] = [
     description: 'Global Database of Events, Language, and Tone — free, no auth',
   },
   {
-    key: 'acled',
-    label: 'ACLED',
-    description: 'Armed Conflict Location & Event Data — conflict events with coordinates',
-    requiresKey: true,
-    keyVar: 'ACLED_API_KEY + ACLED_EMAIL',
+    key: 'ucdp',
+    label: 'UCDP',
+    description: 'Uppsala Conflict Data Program — structured armed conflict events, free',
+  },
+  {
+    key: 'reliefweb',
+    label: 'ReliefWeb (UN)',
+    description: 'UN OCHA humanitarian reports — conflict, displacement, crises',
   },
 ]
 
@@ -79,7 +92,7 @@ export function IngestionPanel() {
   return (
     <div className="space-y-5">
       {/* Source cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {SOURCES.map((source) => (
           <div
             key={source.key}

@@ -9,7 +9,7 @@ export function formatDate(dateStr: string): string {
 
 export function formatRelativeDate(dateStr: string): string {
   const date = new Date(dateStr)
-  const now = new Date('2026-04-01')
+  const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 

@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import { SessionProvider } from 'next-auth/react'
 import { SidebarProvider, useSidebar } from '@/contexts/sidebar'
+import { ThemeProvider } from '@/contexts/theme'
 import { CommandPaletteProvider } from '@/contexts/command-palette'
 import { AlertDrawerProvider } from '@/contexts/alert-drawer'
 import { WatchlistProvider } from '@/contexts/watchlist'
@@ -51,15 +52,17 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <SessionProvider>
-      <SidebarProvider>
-        <CommandPaletteProvider>
-          <AlertDrawerProvider>
-            <WatchlistProvider>
-              <ShellLayout>{children}</ShellLayout>
-            </WatchlistProvider>
-          </AlertDrawerProvider>
-        </CommandPaletteProvider>
-      </SidebarProvider>
+      <ThemeProvider>
+        <SidebarProvider>
+          <CommandPaletteProvider>
+            <AlertDrawerProvider>
+              <WatchlistProvider>
+                <ShellLayout>{children}</ShellLayout>
+              </WatchlistProvider>
+            </AlertDrawerProvider>
+          </CommandPaletteProvider>
+        </SidebarProvider>
+      </ThemeProvider>
     </SessionProvider>
   )
 }

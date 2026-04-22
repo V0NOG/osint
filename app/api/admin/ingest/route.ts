@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { runIngestionPipeline, type IngestionSource } from '@/lib/ingestion/pipeline'
 
-const VALID_SOURCES: IngestionSource[] = ['rss', 'gdelt', 'acled', 'all']
+const VALID_SOURCES: IngestionSource[] = ['rss', 'gdelt', 'ucdp', 'reliefweb', 'cyber', 'trade', 'all']
 
 /**
  * POST /api/admin/ingest?source=...

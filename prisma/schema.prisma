@@ -256,3 +256,21 @@ model ForecastEvidence {
   addedAt     DateTime          @default(now())
   forecast    Forecast          @relation(fields: [forecastId], references: [id], onDelete: Cascade)
 }
+
+// ─── Ingestion feed registry ──────────────────────────────────────────────────
+
+model IngestionFeed {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  name        String
+  url         String
+  category    String   // 'rss' | 'gdelt' | 'reliefweb' | 'ucdp' | 'gdacs'
+  domain      String   // 'general' | 'cyber' | 'trade' | 'humanitarian' | 'conflict'
+  reliability String   @default("medium")
+  enabled     Boolean  @default(true)
+  custom      Boolean  @default(false)
+  tags        String[]
+  bias        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

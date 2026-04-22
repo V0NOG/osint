@@ -1,45 +1,40 @@
 'use client'
 import * as THREE from 'three'
 import { GLOBE_RADIUS } from './GlobeSphere'
+import { useTheme } from '@/contexts/theme'
 
-/**
- * Multi-layer atmospheric glow.
- * Uses BackSide rendering so the glow appears around the globe edge.
- */
 export function GlobeAtmosphere() {
+  const { theme } = useTheme()
+  const light = theme === 'light'
+
   return (
     <>
-      {/* Inner haze — tight blue rim */}
       <mesh>
         <sphereGeometry args={[GLOBE_RADIUS * 1.045, 64, 64]} />
         <meshPhongMaterial
-          color={new THREE.Color('#1a5cb0')}
+          color={new THREE.Color(light ? '#42a5f5' : '#1a5cb0')}
           transparent
-          opacity={0.13}
+          opacity={light ? 0.18 : 0.13}
           side={THREE.BackSide}
           depthWrite={false}
         />
       </mesh>
-
-      {/* Mid atmosphere — softer diffusion */}
       <mesh>
         <sphereGeometry args={[GLOBE_RADIUS * 1.1, 64, 64]} />
         <meshPhongMaterial
-          color={new THREE.Color('#0d3a8a')}
+          color={new THREE.Color(light ? '#64b5f6' : '#0d3a8a')}
           transparent
-          opacity={0.07}
+          opacity={light ? 0.10 : 0.07}
           side={THREE.BackSide}
           depthWrite={false}
         />
       </mesh>
-
-      {/* Outer corona — very faint */}
       <mesh>
         <sphereGeometry args={[GLOBE_RADIUS * 1.18, 48, 48]} />
         <meshPhongMaterial
-          color={new THREE.Color('#082060')}
+          color={new THREE.Color(light ? '#90caf9' : '#082060')}
           transparent
-          opacity={0.03}
+          opacity={light ? 0.05 : 0.03}
           side={THREE.BackSide}
           depthWrite={false}
         />

@@ -50,7 +50,8 @@
       "Bash(grep:*)",
       "Bash(awk -F: '{print $1}')",
       "Bash(openssl rand:*)",
-      "Bash(xargs kill *)"
+      "Bash(xargs kill *)",
+      "Bash(wait)"
     ]
   }
 }

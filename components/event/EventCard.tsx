@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Calendar, MapPin, ExternalLink } from 'lucide-react'
+import { Calendar, MapPin, ExternalLink, Layers } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils/cn'
 import { formatRelativeDate } from '@/lib/utils/format'
@@ -42,16 +42,23 @@ const BIAS_CLASS: Record<SourceBias, string> = {
   'right':        'bg-red-500/15 text-red-400 border-red-500/25',
 }
 
+function isNew(createdAt?: string): boolean {
+  if (!createdAt) return false
+  return Date.now() - new Date(createdAt).getTime() < 2 * 60 * 60 * 1000
+}
+
 export function EventCard({ event, className, variant = 'full', countryMap, onTagClick }: EventCardProps) {
   const countryNames = event.countries
     .map((id) => countryMap?.[id])
     .filter(Boolean) as string[]
 
-  // Derive bias from the first source's display name
   const primarySourceName = event.sources[0]?.title
   const bias: SourceBias | undefined = primarySourceName
     ? SOURCE_NAME_BIAS_MAP[primarySourceName]
     : undefined
+
+  const fresh = isNew(event.createdAt)
+  const sourceCount = event.sources.length
 
   return (
     <Link href={`/events/${event.id}`} className="block group">
@@ -60,6 +67,7 @@ export function EventCard({ event, className, variant = 'full', countryMap, onTa
           'bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg',
           'hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-strong)]',
           'transition-all duration-150',
+          fresh && 'border-l-2 border-l-blue-500',
           variant === 'compact' ? 'p-3' : 'p-4',
           className
         )}
@@ -73,6 +81,11 @@ export function EventCard({ event, className, variant = 'full', countryMap, onTa
             <Badge variant={`severity-${event.severity}`}>
               {event.severity}
             </Badge>
+            {fresh && (
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 border border-blue-500/25 tracking-wider uppercase">
+                New
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
             {bias && (
@@ -96,22 +109,22 @@ export function EventCard({ event, className, variant = 'full', countryMap, onTa
         {/* Title */}
         <h3
           className={cn(
-            'font-semibold text-[var(--color-text-primary)] group-hover:text-white transition-colors duration-150 leading-snug mb-1.5',
+            'font-semibold text-[var(--color-text-primary)] group-hover:text-[var(--color-accent-blue)] transition-colors duration-150 leading-snug mb-1.5',
             variant === 'compact' ? 'text-xs' : 'text-sm'
           )}
         >
           {event.title}
         </h3>
 
-        {/* Summary — only in full variant */}
+        {/* Summary */}
         {variant === 'full' && (
-          <p className="text-xs text-[var(--color-text-secondary)] line-clamp-2 mb-3 leading-relaxed">
+          <p className="text-xs text-[var(--color-text-secondary)] line-clamp-3 mb-3 leading-relaxed">
             {event.summary}
           </p>
         )}
 
         {/* Footer */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           {countryNames.length > 0 && (
             <div className="flex items-center gap-1 text-[var(--color-text-tertiary)] min-w-0">
               <MapPin className="w-3 h-3 flex-shrink-0" strokeWidth={1.5} />
@@ -122,9 +135,15 @@ export function EventCard({ event, className, variant = 'full', countryMap, onTa
             </div>
           )}
           {primarySourceName && (
-            <span className="text-[10px] text-[var(--color-text-tertiary)] truncate max-w-[120px]">
+            <span className="text-[10px] text-[var(--color-text-tertiary)] truncate max-w-[140px]">
               {primarySourceName}
             </span>
+          )}
+          {sourceCount > 1 && (
+            <div className="flex items-center gap-1 text-[var(--color-text-tertiary)]" title={`${sourceCount} sources`}>
+              <Layers className="w-3 h-3 flex-shrink-0" strokeWidth={1.5} />
+              <span className="text-[10px]">{sourceCount}</span>
+            </div>
           )}
           <div className="ml-auto flex items-center gap-1 text-[var(--color-text-tertiary)] opacity-0 group-hover:opacity-100 transition-opacity duration-150">
             <ExternalLink className="w-3 h-3" strokeWidth={1.5} />
@@ -134,7 +153,7 @@ export function EventCard({ event, className, variant = 'full', countryMap, onTa
         {/* Tags */}
         {variant === 'full' && event.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2.5 pt-2.5 border-t border-[var(--color-border)]">
-            {event.tags.slice(0, 4).map((tag) => (
+            {event.tags.slice(0, 5).map((tag) => (
               <button
                 key={tag}
                 onClick={(e) => {
@@ -145,8 +164,8 @@ export function EventCard({ event, className, variant = 'full', countryMap, onTa
                   }
                 }}
                 className={cn(
-                  'text-[10px] px-1.5 py-0.5 rounded bg-white/4 text-[var(--color-text-tertiary)] font-medium border border-transparent transition-colors',
-                  onTagClick && 'hover:bg-white/10 hover:text-[var(--color-text-secondary)] hover:border-white/10 cursor-pointer'
+                  'text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-bg-elevated)] text-[var(--color-text-tertiary)] font-medium border border-[var(--color-border)] transition-colors',
+                  onTagClick && 'hover:bg-[var(--color-bg-overlay)] hover:text-[var(--color-text-secondary)] cursor-pointer'
                 )}
               >
                 {tag}

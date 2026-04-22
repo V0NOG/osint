@@ -7,6 +7,7 @@ import { mockCountries } from '../lib/mock-data/countries'
 import { mockActors } from '../lib/mock-data/actors'
 import { mockEvents } from '../lib/mock-data/events'
 import { mockForecasts } from '../lib/mock-data/forecasts'
+import { COUNTRIES_SEED } from '../lib/data/world-countries'
 
 const ACTOR_TYPE_TO_PRISMA: Record<string, string> = {
   state: 'state',
@@ -112,6 +113,64 @@ async function main() {
         gdp: (c as unknown as Record<string, unknown>).gdp != null
           ? BigInt((c as unknown as Record<string, unknown>).gdp as number)
           : null,
+      },
+    })
+  }
+
+  // ── Stub regions for world countries ─────────────────────────────────────
+  const EXTRA_REGIONS = [
+    { id: 'africa', name: 'Africa', riskLevel: 'elevated' as const, riskScore: 52 },
+    { id: 'north-america', name: 'North America', riskLevel: 'low' as const, riskScore: 18 },
+    { id: 'south-america', name: 'South America', riskLevel: 'moderate' as const, riskScore: 36 },
+    { id: 'europe', name: 'Europe', riskLevel: 'moderate' as const, riskScore: 32 },
+    { id: 'south-asia', name: 'South Asia', riskLevel: 'elevated' as const, riskScore: 54 },
+    { id: 'central-asia', name: 'Central Asia', riskLevel: 'moderate' as const, riskScore: 38 },
+    { id: 'oceania', name: 'Oceania', riskLevel: 'low' as const, riskScore: 14 },
+    { id: 'caribbean', name: 'Caribbean', riskLevel: 'moderate' as const, riskScore: 35 },
+    { id: 'central-america', name: 'Central America', riskLevel: 'elevated' as const, riskScore: 46 },
+  ]
+  for (const r of EXTRA_REGIONS) {
+    await prisma.region.upsert({
+      where: { id: r.id },
+      update: {},
+      create: {
+        id: r.id,
+        slug: r.id,
+        name: r.name,
+        overallRiskScore: r.riskScore,
+        riskLevel: r.riskLevel,
+        summary: '',
+        keyTensions: [],
+        lastUpdated: new Date(),
+        activeEventCount: 0,
+        activeForecastCount: 0,
+      },
+    })
+  }
+
+  // ── World countries (all UN-recognized) ──────────────────────────────────
+  console.log('Seeding world countries...')
+  for (const wc of COUNTRIES_SEED) {
+    await prisma.country.upsert({
+      where: { iso2: wc.iso2 },
+      update: {},
+      create: {
+        id: wc.slug,
+        slug: wc.slug,
+        name: wc.name,
+        iso2: wc.iso2,
+        iso3: wc.iso3,
+        capital: wc.capital,
+        regionId: wc.region,
+        overallRiskScore: wc.riskScore,
+        riskLevel: wc.riskLevel,
+        riskCategories: {} as import('@prisma/client').Prisma.InputJsonValue,
+        summary: wc.description ?? '',
+        lastUpdated: new Date(),
+        alertCount: 0,
+        activeForecastCount: 0,
+        population: wc.population ?? null,
+        gdp: wc.gdp != null ? BigInt(Math.round(wc.gdp)) : null,
       },
     })
   }

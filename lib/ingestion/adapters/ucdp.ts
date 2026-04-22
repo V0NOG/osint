@@ -76,6 +76,12 @@ const VIOLENCE_TYPE: Record<number, string> = {
 }
 
 export async function fetchUcdp(maxRecords = 100): Promise<RawItem[]> {
+  const token = process.env.UCDP_API_TOKEN
+  if (!token) {
+    console.warn('[ucdp] Skipping — set UCDP_API_TOKEN in .env.local (register free at ucdp.uu.se)')
+    return []
+  }
+
   const currentYear = new Date().getFullYear()
 
   // Fetch current year + previous year to get recent events
@@ -95,6 +101,7 @@ export async function fetchUcdp(maxRecords = 100): Promise<RawItem[]> {
         headers: {
           'User-Agent': 'OSINT-Forecasting-Platform/1.0',
           Accept: 'application/json',
+          'x-ucdp-access-token': token,
         },
       })
 

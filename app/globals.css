@@ -36,10 +36,35 @@
   --color-risk-low: #22c55e;
   --color-risk-minimal: #6b7280;
 
+  /* Component-specific */
+  --color-panel-bg: rgba(28, 35, 51, 0.6);
+  --color-shimmer-highlight: rgba(255, 255, 255, 0.04);
+  --color-scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --color-scrollbar-thumb-hover: rgba(255, 255, 255, 0.18);
+
   /* Layout */
   --sidebar-width: 240px;
   --sidebar-collapsed-width: 64px;
   --topbar-height: 56px;
+}
+
+[data-theme="light"] {
+  --color-bg-base: #f1f3f7;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #f7f8fc;
+  --color-bg-overlay: #eef0f5;
+
+  --color-border: rgba(0, 0, 0, 0.07);
+  --color-border-strong: rgba(0, 0, 0, 0.13);
+
+  --color-text-primary: #0f1117;
+  --color-text-secondary: #455268;
+  --color-text-tertiary: #8a94a8;
+
+  --color-panel-bg: rgba(248, 249, 252, 0.85);
+  --color-shimmer-highlight: rgba(0, 0, 0, 0.03);
+  --color-scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --color-scrollbar-thumb-hover: rgba(0, 0, 0, 0.2);
 }
 
 /* ─── Base Styles ────────────────────────────────────────────────────── */
@@ -87,17 +112,17 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-scrollbar-thumb);
     border-radius: 2px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--color-scrollbar-thumb-hover);
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    scrollbar-color: var(--color-scrollbar-thumb) transparent;
   }
 }
 
@@ -111,7 +136,7 @@
   }
 
   .panel {
-    background-color: rgba(28, 35, 51, 0.6);
+    background-color: var(--color-panel-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--color-border);
@@ -214,7 +239,7 @@
     background: linear-gradient(
       90deg,
       var(--color-bg-elevated) 0%,
-      rgba(255, 255, 255, 0.04) 50%,
+      var(--color-shimmer-highlight) 50%,
       var(--color-bg-elevated) 100%
     );
     background-size: 1000px 100%;
