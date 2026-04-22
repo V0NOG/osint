@@ -19,6 +19,14 @@ export async function getForecasts(filters: ForecastFilters = {}): Promise<Forec
   return forecasts.map(mapForecast)
 }
 
+export async function getForecastsByIds(ids: string[]): Promise<Forecast[]> {
+  const forecasts = await prisma.forecast.findMany({
+    where: { id: { in: ids } },
+    include: { history: true, evidence: true, countries: true, relatedEvents: true },
+  })
+  return forecasts.map(mapForecast)
+}
+
 export async function getForecastById(id: string): Promise<Forecast | null> {
   const forecast = await prisma.forecast.findUnique({
     where: { id },

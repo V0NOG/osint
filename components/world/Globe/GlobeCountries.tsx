@@ -137,7 +137,7 @@ export function GlobeCountries({ countryRiskMap }: GlobeCountriesProps) {
 
     return features
       .filter((f) => f.geometry !== null)
-      .map((f) => {
+      .map((f, idx) => {
         if (
           f.geometry.type !== 'Polygon' &&
           f.geometry.type !== 'MultiPolygon'
@@ -166,8 +166,9 @@ export function GlobeCountries({ countryRiskMap }: GlobeCountriesProps) {
           borderPositions.push(...ringToLineSegments(bPts))
         }
 
+        const numericId = f.properties.numericId
         return {
-          id: f.properties.numericId,
+          id: Number.isNaN(numericId) ? (iso3 ?? `f-${idx}`) : numericId,
           fillPositions:   new Float32Array(fillPositions),
           borderPositions: new Float32Array(borderPositions),
           fillColor:    fillStyle.color,

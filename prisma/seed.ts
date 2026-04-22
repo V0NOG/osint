@@ -102,15 +102,15 @@ async function main() {
         regionId: c.region,
         overallRiskScore: c.overallRiskScore,
         riskLevel: c.riskLevel as 'critical' | 'high' | 'elevated' | 'moderate' | 'low' | 'minimal',
-        riskCategories: c.riskCategories,
+        riskCategories: c.riskCategories as unknown as import('@prisma/client').Prisma.InputJsonValue,
         summary: c.summary,
         capital: c.capital,
         lastUpdated: new Date(c.lastUpdated),
         alertCount: c.alertCount,
         activeForecastCount: c.activeForecastCount,
         population: c.population != null ? BigInt(c.population) : null,
-        gdp: (c as Record<string, unknown>).gdp != null
-          ? BigInt((c as Record<string, unknown>).gdp as number)
+        gdp: (c as unknown as Record<string, unknown>).gdp != null
+          ? BigInt((c as unknown as Record<string, unknown>).gdp as number)
           : null,
       },
     })

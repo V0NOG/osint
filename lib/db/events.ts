@@ -18,6 +18,14 @@ export async function getRecentEvents(limit = 25): Promise<GeopoliticalEvent[]> 
   return events.map(mapEvent)
 }
 
+export async function getEventsByIds(ids: string[]): Promise<GeopoliticalEvent[]> {
+  const events = await prisma.geopoliticalEvent.findMany({
+    where: { id: { in: ids } },
+    include: { sources: true, countries: true, actors: true, relatedForecasts: true },
+  })
+  return events.map(mapEvent)
+}
+
 export async function getEvents(filters: EventFilters = {}): Promise<GeopoliticalEvent[]> {
   const events = await prisma.geopoliticalEvent.findMany({
     where: {

@@ -49,7 +49,8 @@
       "Bash(grep -n \"GlobeArc\" /Users/connor/Documents/osint/components/world/Globe/*.ts)",
       "Bash(grep:*)",
       "Bash(awk -F: '{print $1}')",
-      "Bash(openssl rand:*)"
+      "Bash(openssl rand:*)",
+      "Bash(xargs kill *)"
     ]
   }
 }

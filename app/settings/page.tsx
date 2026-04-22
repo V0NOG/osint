@@ -118,8 +118,8 @@ export default function SettingsPage() {
               badge={<Badge variant="status-draft" size="sm">Phase 4</Badge>}
             />
             <SettingRow
-              label="Mock Data Mode"
-              description="Using seeded mock data for all platform views"
+              label="Live Database"
+              description="Connected to Postgres — all views serve real seeded data"
               action={<Toggle enabled={true} />}
             />
           </div>
@@ -234,9 +234,9 @@ export default function SettingsPage() {
       {/* Build info */}
       <div className="mt-6 p-4 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl">
         <p className="text-[11px] text-[var(--color-text-tertiary)] font-mono leading-relaxed">
-          GeoPol OSINT Platform v0.1.0-beta — Phase 1 Build<br />
-          Next.js 14 · TypeScript · Tailwind CSS<br />
-          Mock data mode: active · Last refresh: 2026-04-01T09:42:00Z
+          GeoPol OSINT Platform v0.1.0-beta — Phase 7 Build<br />
+          Next.js 14 · TypeScript · Tailwind CSS · Prisma · Postgres<br />
+          Database: live · Ingestion: scaffold ready
         </p>
       </div>
     </div>
