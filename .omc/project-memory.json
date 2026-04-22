@@ -1,0 +1,181 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775187115164,
+  "projectRoot": "/Users/connor/Documents/osint",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "14.2.5",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint",
+      "type-check": "tsc --noEmit"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "app",
+      "components",
+      "docs",
+      "lib"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 3,
+      "lastAccessed": 1775187115139,
+      "keyFiles": [
+        "globals.css",
+        "layout.tsx",
+        "page.tsx"
+      ]
+    },
+    "components": {
+      "path": "components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1775187115144,
+      "keyFiles": []
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 4,
+      "lastAccessed": 1775187115144,
+      "keyFiles": [
+        "design-system.md",
+        "forecasting-spec.md",
+        "prd.md",
+        "roadmap.md"
+      ]
+    },
+    "get-shit-done": {
+      "path": "get-shit-done",
+      "purpose": null,
+      "fileCount": 17,
+      "lastAccessed": 1775187115145,
+      "keyFiles": [
+        "CHANGELOG.md",
+        "CONTRIBUTING.md",
+        "LICENSE",
+        "README.ja-JP.md",
+        "README.ko-KR.md"
+      ]
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 0,
+      "lastAccessed": 1775187115145,
+      "keyFiles": []
+    },
+    "types": {
+      "path": "types",
+      "purpose": "Type definitions",
+      "fileCount": 1,
+      "lastAccessed": 1775187115145,
+      "keyFiles": [
+        "three-fiber.d.ts"
+      ]
+    },
+    "ui-ux-pro-max-skill": {
+      "path": "ui-ux-pro-max-skill",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1775187115147,
+      "keyFiles": [
+        "CLAUDE.md",
+        "LICENSE",
+        "README.md",
+        "skill.json"
+      ]
+    },
+    "lib/types": {
+      "path": "lib/types",
+      "purpose": "Type definitions",
+      "fileCount": 4,
+      "lastAccessed": 1775187115148,
+      "keyFiles": [
+        "events.ts",
+        "forecast.ts",
+        "index.ts"
+      ]
+    },
+    "lib/utils": {
+      "path": "lib/utils",
+      "purpose": "Utility functions",
+      "fileCount": 3,
+      "lastAccessed": 1775187115148,
+      "keyFiles": [
+        "cn.ts",
+        "format.ts",
+        "risk.ts"
+      ]
+    },
+    "ui-ux-pro-max-skill/docs": {
+      "path": "ui-ux-pro-max-skill/docs",
+      "purpose": "Documentation",
+      "fileCount": 1,
+      "lastAccessed": 1775187115149,
+      "keyFiles": [
+        "三个 data-scripts-templates 的区别.md"
+      ]
+    }
+  },
+  "hotPaths": [],
+  "userDirectives": []
+}

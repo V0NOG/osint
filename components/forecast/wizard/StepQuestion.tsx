@@ -1,24 +1,25 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { mockRegions } from '@/lib/mock-data/regions'
-import { mockCountries } from '@/lib/mock-data/countries'
 import { cn } from '@/lib/utils/cn'
 import type { ForecastDraft } from './ForecastWizard'
+import type { Region, Country } from '@/lib/types'
 
 interface StepQuestionProps {
   draft: ForecastDraft
   onChange: (updates: Partial<ForecastDraft>) => void
   errors: Record<string, string>
+  regions: Region[]
+  countries: Country[]
 }
 
-export function StepQuestion({ draft, onChange, errors }: StepQuestionProps) {
+export function StepQuestion({ draft, onChange, errors, regions, countries }: StepQuestionProps) {
   const [countryFilter, setCountryFilter] = useState('')
 
   const filteredCountries = useMemo(() => {
     const query = countryFilter.toLowerCase()
-    return mockCountries.filter((c) => c.name.toLowerCase().includes(query))
-  }, [countryFilter])
+    return countries.filter((c) => c.name.toLowerCase().includes(query))
+  }, [countryFilter, countries])
 
   const toggleCountry = (id: string) => {
     const next = draft.countries.includes(id)
@@ -114,8 +115,8 @@ export function StepQuestion({ draft, onChange, errors }: StepQuestionProps) {
             errors.region ? 'border-red-500/50' : 'border-[var(--color-border)] focus:border-blue-500/50'
           )}
         >
-          <option value="">Select a region…</option>
-          {mockRegions.map((r) => (
+          <option value="">{regions.length === 0 ? 'Loading regions…' : 'Select a region…'}</option>
+          {regions.map((r) => (
             <option key={r.id} value={r.id}>{r.name}</option>
           ))}
         </select>
@@ -131,8 +132,9 @@ export function StepQuestion({ draft, onChange, errors }: StepQuestionProps) {
           type="text"
           value={countryFilter}
           onChange={(e) => setCountryFilter(e.target.value)}
-          placeholder="Filter countries…"
-          className="w-full bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-t-lg px-3 py-2 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-blue-500/50 transition-colors"
+          placeholder={countries.length === 0 ? 'Loading countries…' : 'Filter countries…'}
+          disabled={countries.length === 0}
+          className="w-full bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded-t-lg px-3 py-2 text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-blue-500/50 transition-colors disabled:opacity-50"
         />
         <div className="overflow-y-auto max-h-40 bg-[var(--color-bg-elevated)] border border-t-0 border-[var(--color-border)] rounded-b-lg divide-y divide-[var(--color-border)]">
           {filteredCountries.map((c) => (
@@ -143,9 +145,15 @@ export function StepQuestion({ draft, onChange, errors }: StepQuestionProps) {
                 onChange={() => toggleCountry(c.id)}
                 className="accent-blue-500"
               />
-              <span className="text-xs text-[var(--color-text-secondary)]">{c.name}</span>
+              <span className="text-xs text-[var(--color-text-secondary)] flex items-center gap-2">
+                <span className="font-mono text-[10px] text-[var(--color-text-tertiary)] w-5">{c.iso2}</span>
+                {c.name}
+              </span>
             </label>
           ))}
+          {countries.length > 0 && filteredCountries.length === 0 && (
+            <p className="px-3 py-2 text-xs text-[var(--color-text-tertiary)]">No countries match "{countryFilter}"</p>
+          )}
         </div>
         {draft.countries.length > 0 && (
           <p className="text-[11px] text-blue-400 mt-1">{draft.countries.length} selected</p>

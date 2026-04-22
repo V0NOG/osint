@@ -6,6 +6,16 @@ interface EventFilters {
   severity?: EventSeverity
   eventType?: EventType
   countryId?: string
+  limit?: number
+}
+
+export async function getRecentEvents(limit = 25): Promise<GeopoliticalEvent[]> {
+  const events = await prisma.geopoliticalEvent.findMany({
+    include: { sources: true, countries: true, actors: true, relatedForecasts: true },
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  })
+  return events.map(mapEvent)
 }
 
 export async function getEvents(filters: EventFilters = {}): Promise<GeopoliticalEvent[]> {
@@ -17,6 +27,7 @@ export async function getEvents(filters: EventFilters = {}): Promise<Geopolitica
     },
     include: { sources: true, countries: true, actors: true, relatedForecasts: true },
     orderBy: { date: 'desc' },
+    ...(filters.limit && { take: filters.limit }),
   })
   return events.map(mapEvent)
 }

@@ -2,6 +2,13 @@ import { prisma } from './client'
 import { mapCountry, mapActor, mapEvent, mapForecast, mapRegion } from './mappers'
 import type { Country, Actor, GeopoliticalEvent, Forecast, Region } from '@/lib/types'
 
+export async function getCountriesByIds(ids: string[]): Promise<Country[]> {
+  const countries = await prisma.country.findMany({
+    where: { id: { in: ids } },
+  })
+  return countries.map(mapCountry)
+}
+
 export async function getCountries(): Promise<Country[]> {
   const countries = await prisma.country.findMany({
     orderBy: { overallRiskScore: 'desc' },

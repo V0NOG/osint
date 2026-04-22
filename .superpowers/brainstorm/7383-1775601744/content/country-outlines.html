@@ -1,0 +1,99 @@
+<h2>Country Outlines — Rendering Style</h2>
+<p class="subtitle">How should country boundaries appear on the globe surface?</p>
+
+<div class="cards">
+
+  <!-- Option A: Outlines only -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+        <div style="width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 38% 35%, #0d2040 0%, #060e1e 55%, #020609 100%);border:1px solid rgba(255,255,255,0.07);position:relative;overflow:hidden;flex-shrink:0;">
+          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, transparent 54%, rgba(30,80,180,0.22) 74%, rgba(10,40,120,0.1) 100%);pointer-events:none;"></div>
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 150 150">
+            <!-- lat/lon grid -->
+            <line x1="0" y1="50" x2="150" y2="50" stroke="rgba(42,80,128,0.06)" stroke-width="0.5"/>
+            <line x1="0" y1="75" x2="150" y2="75" stroke="rgba(42,80,128,0.06)" stroke-width="0.5"/>
+            <line x1="0" y1="100" x2="150" y2="100" stroke="rgba(42,80,128,0.06)" stroke-width="0.5"/>
+            <line x1="50" y1="0" x2="50" y2="150" stroke="rgba(42,80,128,0.06)" stroke-width="0.5"/>
+            <line x1="75" y1="0" x2="75" y2="150" stroke="rgba(42,80,128,0.06)" stroke-width="0.5"/>
+            <line x1="100" y1="0" x2="100" y2="150" stroke="rgba(42,80,128,0.06)" stroke-width="0.5"/>
+            <!-- Country outlines only — thin cool-white lines -->
+            <path d="M 62 24 L 72 22 L 85 24 L 95 28 L 100 35 L 95 40 L 85 42 L 75 40 L 68 37 L 60 34 L 58 28 Z" fill="none" stroke="rgba(180,200,240,0.35)" stroke-width="0.7"/>
+            <path d="M 95 28 L 108 26 L 118 30 L 120 38 L 112 44 L 100 42 L 95 40 Z" fill="none" stroke="rgba(180,200,240,0.35)" stroke-width="0.7"/>
+            <path d="M 85 42 L 95 40 L 100 42 L 98 55 L 90 60 L 82 55 L 80 48 Z" fill="none" stroke="rgba(180,200,240,0.3)" stroke-width="0.6"/>
+            <path d="M 62 44 L 75 42 L 78 50 L 80 62 L 74 72 L 64 70 L 58 60 L 58 50 Z" fill="none" stroke="rgba(180,200,240,0.28)" stroke-width="0.6"/>
+            <path d="M 25 28 L 42 26 L 48 34 L 46 48 L 38 56 L 26 52 L 20 42 Z" fill="none" stroke="rgba(180,200,240,0.28)" stroke-width="0.6"/>
+            <path d="M 42 26 L 52 24 L 56 34 L 52 44 L 46 48 L 42 40 L 40 32 Z" fill="none" stroke="rgba(180,200,240,0.25)" stroke-width="0.5"/>
+            <path d="M 110 58 L 122 56 L 126 64 L 118 70 L 108 66 Z" fill="none" stroke="rgba(180,200,240,0.25)" stroke-width="0.5"/>
+            <!-- Risk markers on top -->
+            <circle cx="78" cy="30" r="3" fill="#ef4444" opacity="0.9"/>
+            <circle cx="78" cy="30" r="5.5" fill="none" stroke="#ef4444" stroke-width="0.5" opacity="0.4"/>
+            <circle cx="104" cy="34" r="2.5" fill="#f97316" opacity="0.9"/>
+            <circle cx="92" cy="48" r="2" fill="#f97316" opacity="0.8"/>
+            <circle cx="33" cy="38" r="2" fill="#eab308" opacity="0.7"/>
+          </svg>
+        </div>
+        <div style="margin-left:16px;display:flex;flex-direction:column;gap:8px;">
+          <div style="font-family:monospace;font-size:10px;color:#6b7280;">
+            <div style="color:#9ca3af;margin-bottom:6px;font-size:9px;text-transform:uppercase;letter-spacing:0.08em;">Style</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <div style="width:20px;height:1px;background:rgba(180,200,240,0.35);"></div>
+              <span>Border lines</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#060e1e;"></div>
+              <span>No fill</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <div style="width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 5px #ef4444;"></div>
+              <span>Risk dots remain</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Outline Only</h3>
+      <p>Thin semi-transparent border lines drawn along country edges. Globe surface stays dark. Risk dot markers remain as the primary risk signal. Clean, minimal — like a classified ops map. Easiest to implement (lines only, no fill geometry).</p>
+    </div>
+  </div>
+
+  <!-- Option B: Filled polygons by risk -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:200px;">
+        <div style="width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 38% 35%, #0d2040 0%, #060e1e 55%, #020609 100%);border:1px solid rgba(255,255,255,0.07);position:relative;overflow:hidden;flex-shrink:0;">
+          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, transparent 54%, rgba(30,80,180,0.22) 74%, rgba(10,40,120,0.1) 100%);pointer-events:none;"></div>
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 150 150">
+            <!-- Country fills colored by risk level -->
+            <path d="M 62 24 L 72 22 L 85 24 L 95 28 L 100 35 L 95 40 L 85 42 L 75 40 L 68 37 L 60 34 L 58 28 Z" fill="rgba(239,68,68,0.18)" stroke="rgba(239,68,68,0.5)" stroke-width="0.7"/>
+            <path d="M 95 28 L 108 26 L 118 30 L 120 38 L 112 44 L 100 42 L 95 40 Z" fill="rgba(249,115,22,0.16)" stroke="rgba(249,115,22,0.45)" stroke-width="0.6"/>
+            <path d="M 85 42 L 95 40 L 100 42 L 98 55 L 90 60 L 82 55 L 80 48 Z" fill="rgba(249,115,22,0.14)" stroke="rgba(249,115,22,0.4)" stroke-width="0.6"/>
+            <path d="M 62 44 L 75 42 L 78 50 L 80 62 L 74 72 L 64 70 L 58 60 L 58 50 Z" fill="rgba(234,179,8,0.14)" stroke="rgba(234,179,8,0.4)" stroke-width="0.6"/>
+            <path d="M 25 28 L 42 26 L 48 34 L 46 48 L 38 56 L 26 52 L 20 42 Z" fill="rgba(34,197,94,0.12)" stroke="rgba(34,197,94,0.35)" stroke-width="0.6"/>
+            <path d="M 42 26 L 52 24 L 56 34 L 52 44 L 46 48 L 42 40 L 40 32 Z" fill="rgba(234,179,8,0.12)" stroke="rgba(234,179,8,0.35)" stroke-width="0.5"/>
+            <path d="M 110 58 L 122 56 L 126 64 L 118 70 L 108 66 Z" fill="rgba(34,197,94,0.1)" stroke="rgba(34,197,94,0.3)" stroke-width="0.5"/>
+            <!-- Critical pulse markers -->
+            <circle cx="78" cy="30" r="3" fill="#ef4444" opacity="0.95"/>
+            <circle cx="78" cy="30" r="6" fill="none" stroke="#ef4444" stroke-width="0.5" opacity="0.35"/>
+            <circle cx="104" cy="34" r="2.5" fill="#f97316" opacity="0.9"/>
+          </svg>
+        </div>
+        <div style="margin-left:16px;display:flex;flex-direction:column;gap:8px;">
+          <div style="font-family:monospace;font-size:10px;color:#6b7280;">
+            <div style="color:#9ca3af;margin-bottom:6px;font-size:9px;text-transform:uppercase;letter-spacing:0.08em;">Legend</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:12px;height:8px;border-radius:2px;background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.5);"></div><span>Critical</span></div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:12px;height:8px;border-radius:2px;background:rgba(249,115,22,0.18);border:1px solid rgba(249,115,22,0.45);"></div><span>High</span></div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="width:12px;height:8px;border-radius:2px;background:rgba(234,179,8,0.15);border:1px solid rgba(234,179,8,0.4);"></div><span>Elevated</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:8px;border-radius:2px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.35);"></div><span>Low / Minimal</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Filled by Risk Level</h3>
+      <p>Country polygons filled with a subtle tint matching their risk color (red for critical, orange for high, etc.) plus a matching border. The globe becomes a live risk heatmap. Critical/high countries still get pulsing dot markers on top. Immediately readable — you see the risk picture at a glance.</p>
+    </div>
+  </div>
+
+</div>

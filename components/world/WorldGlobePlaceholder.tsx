@@ -1,7 +1,10 @@
 import { WorldGlobe } from './WorldGlobe'
 import type { GlobeCountryMarker } from './Globe'
+import type { Country, GeopoliticalEvent } from '@/lib/types'
 
 interface WorldGlobePlaceholderProps {
+  countries?: Country[]
+  events?: GeopoliticalEvent[]
   onSelect?: (marker: GlobeCountryMarker | null) => void
 }
 
@@ -15,6 +18,6 @@ interface WorldGlobePlaceholderProps {
  * The Globe/* module is the visual-3d agent's ownership boundary.
  * Page-level consumers only need this component — they never import Globe/* directly.
  */
-export function WorldGlobePlaceholder({ onSelect }: WorldGlobePlaceholderProps) {
-  return <WorldGlobe onSelect={onSelect} />
+export function WorldGlobePlaceholder({ countries, events, onSelect }: WorldGlobePlaceholderProps) {
+  return <WorldGlobe countries={countries} events={events} onSelect={onSelect} />
 }

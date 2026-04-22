@@ -6,46 +6,48 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils/cn'
 import { useCommandPalette } from '@/contexts/command-palette'
 import { useAlertDrawer } from '@/contexts/alert-drawer'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockEvents } from '@/lib/mock-data/events'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
+
+// Static section labels
+const SECTION_LABELS: Record<string, string> = {
+  world: 'World Overview',
+  countries: 'Countries',
+  regions: 'Regions',
+  events: 'Events',
+  forecasts: 'Forecasts',
+  actors: 'Actors',
+  watchlist: 'Watchlist',
+  settings: 'Settings',
+  admin: 'Admin',
+  auth: 'Sign In',
+}
+
+// What to call a single entity from each section
+const DETAIL_LABELS: Record<string, string> = {
+  countries: 'Country Profile',
+  regions: 'Region',
+  events: 'Event',
+  forecasts: 'Forecast',
+  actors: 'Actor',
+}
 
 function resolvePageMeta(pathname: string): { title: string; breadcrumbs: string[] } {
-  // Static routes
-  const staticLabels: Record<string, { title: string; breadcrumbs: string[] }> = {
-    '/world': { title: 'World Overview', breadcrumbs: ['World'] },
-    '/countries': { title: 'Countries', breadcrumbs: ['Countries'] },
-    '/regions': { title: 'Regions', breadcrumbs: ['Regions'] },
-    '/events': { title: 'Events', breadcrumbs: ['Events'] },
-    '/forecasts': { title: 'Forecasts', breadcrumbs: ['Forecasts'] },
-    '/watchlist': { title: 'Watchlist', breadcrumbs: ['Watchlist'] },
-    '/settings': { title: 'Settings', breadcrumbs: ['Settings'] },
+  const segments = pathname.split('/').filter(Boolean)
+
+  if (segments.length === 0) {
+    return { title: 'World Overview', breadcrumbs: ['World'] }
   }
 
-  if (staticLabels[pathname]) return staticLabels[pathname]
+  const section = segments[0]
+  const sectionLabel = SECTION_LABELS[section] ?? section.charAt(0).toUpperCase() + section.slice(1)
 
-  // Country detail
-  const countryMatch = pathname.match(/^\/countries\/([^/]+)$/)
-  if (countryMatch) {
-    const country = mockCountries.find((c) => c.slug === countryMatch[1])
-    if (country) return { title: country.name, breadcrumbs: ['Countries', country.name] }
+  // Top-level section page (e.g. /events, /countries)
+  if (segments.length === 1) {
+    return { title: sectionLabel, breadcrumbs: [sectionLabel] }
   }
 
-  // Event detail
-  const eventMatch = pathname.match(/^\/events\/([^/]+)$/)
-  if (eventMatch) {
-    const event = mockEvents.find((e) => e.id === eventMatch[1])
-    if (event) return { title: event.title, breadcrumbs: ['Events', event.title] }
-  }
-
-  // Forecast detail
-  const forecastMatch = pathname.match(/^\/forecasts\/([^/]+)$/)
-  if (forecastMatch) {
-    const forecast = mockForecasts.find((f) => f.id === forecastMatch[1])
-    if (forecast) return { title: forecast.title, breadcrumbs: ['Forecasts', forecast.title] }
-  }
-
-  return { title: 'GeoPol', breadcrumbs: [] }
+  // Detail page (e.g. /events/[id], /countries/[slug])
+  const detailLabel = DETAIL_LABELS[section] ?? 'Detail'
+  return { title: sectionLabel, breadcrumbs: [sectionLabel, detailLabel] }
 }
 
 export function TopBar() {
@@ -99,7 +101,7 @@ export function TopBar() {
         <h1 className="text-sm font-semibold text-[var(--color-text-primary)] truncate">
           {meta.title}
         </h1>
-        {meta.breadcrumbs.length > 0 && (
+        {meta.breadcrumbs.length > 1 && (
           <div className="flex items-center gap-1 mt-0.5 overflow-hidden">
             {meta.breadcrumbs.map((crumb, i) => (
               <span key={i} className="flex items-center gap-1 min-w-0">

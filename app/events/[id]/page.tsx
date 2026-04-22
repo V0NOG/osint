@@ -1,25 +1,20 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, MapPin, Globe, ExternalLink, Shield, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Calendar, MapPin, ExternalLink, AlertCircle } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Panel } from '@/components/ui/Panel'
+import { WatchButton } from '@/components/ui/WatchButton'
 import { ForecastCard } from '@/components/forecast/ForecastCard'
-import { mockEvents } from '@/lib/mock-data/events'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockActors } from '@/lib/mock-data/actors'
+import { getEventById } from '@/lib/db/events'
+import { getForecastById } from '@/lib/db/forecasts'
 import { formatDate } from '@/lib/utils/format'
 
 interface PageProps {
   params: { id: string }
 }
 
-export async function generateStaticParams() {
-  return mockEvents.map((e) => ({ id: e.id }))
-}
-
 export async function generateMetadata({ params }: PageProps) {
-  const event = mockEvents.find((e) => e.id === params.id)
+  const event = await getEventById(params.id)
   return { title: event?.title ?? 'Event' }
 }
 
@@ -38,19 +33,15 @@ const reliabilityLabels: Record<string, string> = {
   low: 'Low Reliability / Unverified',
 }
 
-export default function EventDetailPage({ params }: PageProps) {
-  const event = mockEvents.find((e) => e.id === params.id)
+export default async function EventDetailPage({ params }: PageProps) {
+  const event = await getEventById(params.id)
   if (!event) notFound()
 
-  const countries = event.countries
-    .map((id) => mockCountries.find((c) => c.id === id))
-    .filter(Boolean)
+  const { countryObjects: countries, actorObjects: actors } = event
 
-  const actors = event.actors
-    .map((id) => mockActors.find((a) => a.id === id))
-    .filter(Boolean)
-
-  const relatedForecasts = mockForecasts.filter((f) => event.relatedForecasts.includes(f.id))
+  const relatedForecasts = await Promise.all(
+    event.relatedForecasts.map((id) => getForecastById(id))
+  ).then((results) => results.filter((f) => f !== null))
 
   return (
     <div className="p-6 max-w-[1100px] mx-auto">
@@ -69,13 +60,16 @@ export default function EventDetailPage({ params }: PageProps) {
           {/* Event header */}
           <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6">
             {/* Badges */}
-            <div className="flex items-center gap-2 flex-wrap mb-3">
-              <Badge variant={`event-${event.eventType}`} size="md">
-                {eventTypeLabels[event.eventType]}
-              </Badge>
-              <Badge variant={`severity-${event.severity}`} size="md">
-                {event.severity} severity
-              </Badge>
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant={`event-${event.eventType}`} size="md">
+                  {eventTypeLabels[event.eventType]}
+                </Badge>
+                <Badge variant={`severity-${event.severity}`} size="md">
+                  {event.severity} severity
+                </Badge>
+              </div>
+              <WatchButton type="event" id={event.id} size="sm" />
             </div>
 
             {/* Title */}
@@ -174,7 +168,7 @@ export default function EventDetailPage({ params }: PageProps) {
               </h2>
               <div className="space-y-2.5">
                 {relatedForecasts.map((forecast) => (
-                  <ForecastCard key={forecast.id} forecast={forecast} variant="compact" />
+                  <ForecastCard key={forecast!.id} forecast={forecast!} variant="compact" />
                 ))}
               </div>
             </section>
@@ -187,7 +181,7 @@ export default function EventDetailPage({ params }: PageProps) {
           {countries.length > 0 && (
             <Panel title="Countries Involved">
               <div className="divide-y divide-[var(--color-border)]">
-                {countries.map((country) => country && (
+                {countries.map((country) => (
                   <Link
                     key={country.id}
                     href={`/countries/${country.slug}`}
@@ -216,10 +210,14 @@ export default function EventDetailPage({ params }: PageProps) {
           {actors.length > 0 && (
             <Panel title="Actors Involved">
               <div className="divide-y divide-[var(--color-border)]">
-                {actors.map((actor) => actor && (
-                  <div key={actor.id} className="px-5 py-3.5">
+                {actors.map((actor) => (
+                  <Link
+                    key={actor.id}
+                    href={`/actors/${actor.id}`}
+                    className="block px-5 py-3.5 hover:bg-[var(--color-bg-elevated)] transition-colors duration-150 group"
+                  >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <span className="text-xs font-semibold text-[var(--color-text-primary)]">
+                      <span className="text-xs font-semibold text-[var(--color-text-primary)] group-hover:text-white transition-colors">
                         {actor.name}
                       </span>
                       <Badge
@@ -236,7 +234,7 @@ export default function EventDetailPage({ params }: PageProps) {
                       </Badge>
                     </div>
                     <p className="text-[11px] text-[var(--color-text-tertiary)]">{actor.role}</p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </Panel>

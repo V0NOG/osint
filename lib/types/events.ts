@@ -25,4 +25,5 @@ export interface GeopoliticalEvent {
   relatedForecasts: string[]
   locationDescription?: string
   impactAssessment?: string
+  createdAt?: string
 }

@@ -1,0 +1,162 @@
+<h2>Forecast Detail — Probability Hero</h2>
+<p class="subtitle">How should the forecast probability be presented in the hero section?</p>
+
+<div class="cards">
+
+  <!-- Option A: Probability dominant -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:12px;font-family:monospace;font-size:10px;color:#6b7280;min-height:280px;">
+
+        <div style="color:#4b5563;margin-bottom:8px;font-size:9px;">Forecasts / <span style="color:#60a5fa;">Russia-Ukraine ceasefire</span></div>
+
+        <!-- Hero -->
+        <div style="background:linear-gradient(135deg,#0d1f3c 0%,#0a1628 100%);border:1px solid rgba(96,165,250,0.25);border-radius:8px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:1px 6px;color:#22c55e;font-size:8px;font-weight:600;">ACTIVE</div>
+                <div style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:4px;padding:1px 6px;color:#60a5fa;font-size:8px;">Q2 2026</div>
+                <div style="color:#4b5563;font-size:8px;">· Medium confidence</div>
+              </div>
+              <div style="color:#f1f5f9;font-size:12px;font-weight:700;line-height:1.4;margin-bottom:4px;">Russia-Ukraine ceasefire before Q3 2026</div>
+              <div style="color:#6b7280;font-size:8px;line-height:1.5;">Will a formal ceasefire agreement between Russia and Ukraine be signed and take effect before July 1, 2026?</div>
+            </div>
+            <!-- Big probability -->
+            <div style="text-align:center;flex-shrink:0;background:rgba(96,165,250,0.06);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:12px 16px;">
+              <div style="font-size:40px;font-weight:900;color:#60a5fa;line-height:1;font-family:monospace;">18%</div>
+              <div style="color:#4b5563;font-size:7px;margin-top:3px;text-transform:uppercase;letter-spacing:0.08em;">Probability</div>
+              <div style="margin-top:8px;display:flex;align-items:center;gap:3px;justify-content:center;">
+                <div style="width:5px;height:5px;border-radius:50%;background:#22c55e;opacity:0.7;"></div>
+                <span style="color:#6b7280;font-size:7px;">v7 · Mar 30</span>
+              </div>
+            </div>
+          </div>
+          <!-- Probability bar -->
+          <div style="margin-top:10px;">
+            <div style="background:#1e2d3d;border-radius:3px;height:5px;position:relative;">
+              <div style="background:linear-gradient(90deg,#3b82f6,#60a5fa);width:18%;height:100%;border-radius:3px;"></div>
+              <div style="position:absolute;left:18%;top:-3px;width:1px;height:11px;background:#60a5fa;opacity:0.7;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:2px;"><span style="color:#4b5563;font-size:7px;">0%</span><span style="color:#4b5563;font-size:7px;">100%</span></div>
+          </div>
+        </div>
+
+        <!-- Two-column body preview -->
+        <div style="display:grid;grid-template-columns:1fr 140px;gap:8px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Rationale</div>
+              <div style="color:#6b7280;font-size:7px;line-height:1.5;">Both parties currently lack sufficient incentive to accept ceasefire terms the other side can agree to. Russia seeks territorial consolidation...</div>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Evidence (3)</div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="width:5px;height:5px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+                  <span style="color:#6b7280;font-size:7px;">US Special Envoy appointed</span>
+                  <span style="margin-left:auto;color:#6b7280;font-size:7px;">MOD</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="width:5px;height:5px;border-radius:50%;background:#ef4444;flex-shrink:0;"></div>
+                  <span style="color:#6b7280;font-size:7px;">Russian March energy strikes</span>
+                  <span style="margin-left:auto;color:#6b7280;font-size:7px;">STR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Countries</div>
+              <div style="display:flex;flex-direction:column;gap:3px;">
+                <div style="color:#9ca3af;font-size:8px;">🇷🇺 Russia</div>
+                <div style="color:#9ca3af;font-size:8px;">🇺🇦 Ukraine</div>
+              </div>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">History</div>
+              <div style="color:#6b7280;font-size:7px;line-height:1.4;">v7 revisions<br/>8% → 18%<br/>since Oct 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Probability dominant</h3>
+      <p>Large probability number in a framed box to the right of the title/question. A probability bar runs full-width below. Screams "this is a forecast" immediately. Evidence panel in the main column shows supporting/opposing items with colored dots.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Inline probability -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:12px;font-family:monospace;font-size:10px;color:#6b7280;min-height:280px;">
+
+        <div style="color:#4b5563;margin-bottom:8px;font-size:9px;">Forecasts / <span style="color:#60a5fa;">Russia-Ukraine ceasefire</span></div>
+
+        <!-- Hero: inline probability row -->
+        <div style="background:linear-gradient(135deg,#0d1f3c 0%,#0a1628 100%);border:1px solid rgba(96,165,250,0.25);border-radius:8px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:1px 6px;color:#22c55e;font-size:8px;font-weight:600;">ACTIVE</div>
+            <div style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:4px;padding:1px 6px;color:#60a5fa;font-size:8px;">Q2 2026</div>
+          </div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:700;line-height:1.4;margin-bottom:8px;">Russia-Ukraine ceasefire before Q3 2026</div>
+
+          <!-- Probability inline row -->
+          <div style="display:flex;align-items:center;gap:12px;padding:8px;background:rgba(0,0,0,0.2);border-radius:6px;margin-bottom:8px;">
+            <div>
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1px;">Probability</div>
+              <div style="font-size:26px;font-weight:900;color:#60a5fa;line-height:1;font-family:monospace;">18%</div>
+            </div>
+            <div style="flex:1;">
+              <div style="background:#1e2d3d;border-radius:3px;height:6px;">
+                <div style="background:linear-gradient(90deg,#3b82f6,#60a5fa);width:18%;height:100%;border-radius:3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1px;">Confidence</div>
+              <div style="color:#eab308;font-size:9px;font-weight:600;">MEDIUM</div>
+            </div>
+            <div>
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1px;">Revision</div>
+              <div style="color:#9ca3af;font-size:9px;font-weight:600;">v7</div>
+            </div>
+          </div>
+
+          <div style="color:#6b7280;font-size:8px;line-height:1.5;">Will a formal ceasefire agreement between Russia and Ukraine be signed and take effect before July 1, 2026?</div>
+        </div>
+
+        <!-- Two-column body -->
+        <div style="display:grid;grid-template-columns:1fr 140px;gap:8px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Rationale</div>
+              <div style="color:#6b7280;font-size:7px;line-height:1.5;">Both parties currently lack sufficient incentive to accept ceasefire terms...</div>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Resolution Criteria</div>
+              <div style="color:#6b7280;font-size:7px;line-height:1.5;">Resolves YES if: a formal written ceasefire agreement is signed by authorized representatives...</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Evidence</div>
+              <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;"><div style="width:5px;height:5px;border-radius:50%;background:#22c55e;"></div><span style="color:#6b7280;font-size:7px;">1 supporting</span></div>
+              <div style="display:flex;align-items:center;gap:4px;"><div style="width:5px;height:5px;border-radius:50%;background:#ef4444;"></div><span style="color:#6b7280;font-size:7px;">2 opposing</span></div>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Countries</div>
+              <div style="color:#9ca3af;font-size:8px;line-height:1.6;">🇷🇺 Russia<br/>🇺🇦 Ukraine</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Inline probability</h3>
+      <p>Probability sits in a compact row inside the hero alongside the confidence level and revision number. The bar is part of that row. Slightly more restrained — the question text is equally prominent. Good for dense scanning, less dramatic.</p>
+    </div>
+  </div>
+
+</div>

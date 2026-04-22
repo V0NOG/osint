@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Search,
@@ -11,18 +11,17 @@ import {
   Settings,
   Map,
   Star,
+  Database,
+  Loader2,
   type LucideIcon,
 } from 'lucide-react'
 import { useCommandPalette } from '@/contexts/command-palette'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockEvents } from '@/lib/mock-data/events'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
 import { cn } from '@/lib/utils/cn'
 import { getRiskTextClass } from '@/lib/utils/risk'
 
 interface PaletteResult {
   id: string
-  group: 'pages' | 'countries' | 'events' | 'forecasts'
+  group: 'pages' | 'countries' | 'events' | 'forecasts' | 'regions'
   label: string
   sublabel?: string
   rightLabel?: string
@@ -38,125 +37,48 @@ const PAGE_RESULTS: PaletteResult[] = [
   { id: 'page-events', group: 'pages', label: 'Events', href: '/events', Icon: Zap },
   { id: 'page-forecasts', group: 'pages', label: 'Forecasts', href: '/forecasts', Icon: Target },
   { id: 'page-watchlist', group: 'pages', label: 'Watchlist', href: '/watchlist', Icon: Star },
+  { id: 'page-admin', group: 'pages', label: 'Ingestion Control', href: '/admin', Icon: Database },
   { id: 'page-settings', group: 'pages', label: 'Settings', href: '/settings', Icon: Settings },
 ]
 
 const GROUP_LABELS: Record<string, string> = {
   pages: 'Pages',
   countries: 'Countries',
+  regions: 'Regions',
   events: 'Events',
   forecasts: 'Forecasts',
 }
 
-function buildResults(query: string): PaletteResult[] {
-  const q = query.toLowerCase().trim()
+const GROUP_ORDER = ['pages', 'countries', 'regions', 'events', 'forecasts'] as const
 
-  if (!q) return PAGE_RESULTS
-
-  const results: PaletteResult[] = []
-
-  // Pages
-  const matchedPages = PAGE_RESULTS.filter((p) => p.label.toLowerCase().includes(q))
-  results.push(...matchedPages)
-
-  // Countries (cap at 5)
-  const countryResults: PaletteResult[] = mockCountries
-    .filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.iso2.toLowerCase().includes(q) ||
-        c.iso3.toLowerCase().includes(q)
-    )
-    .slice(0, 5)
-    .map((c) => ({
-      id: `country-${c.id}`,
-      group: 'countries' as const,
-      label: c.name,
-      sublabel: c.capital,
-      rightLabel: `${c.riskLevel} · ${c.overallRiskScore}`,
-      rightClass: getRiskTextClass(c.riskLevel),
-      href: `/countries/${c.slug}`,
-      Icon: Flag,
-    }))
-  results.push(...countryResults)
-
-  // Events (cap at 5)
-  const eventResults: PaletteResult[] = mockEvents
-    .filter(
-      (e) =>
-        e.title.toLowerCase().includes(q) ||
-        e.tags.some((t) => t.toLowerCase().includes(q))
-    )
-    .slice(0, 5)
-    .map((e) => ({
-      id: `event-${e.id}`,
-      group: 'events' as const,
-      label: e.title,
-      sublabel: e.date,
-      rightLabel: e.severity,
-      rightClass:
-        e.severity === 'critical'
-          ? 'text-red-400'
-          : e.severity === 'high'
-          ? 'text-orange-400'
-          : e.severity === 'moderate'
-          ? 'text-amber-400'
-          : 'text-blue-400',
-      href: `/events/${e.id}`,
-      Icon: Zap,
-    }))
-  results.push(...eventResults)
-
-  // Forecasts (cap at 5)
-  const forecastResults: PaletteResult[] = mockForecasts
-    .filter(
-      (f) =>
-        f.title.toLowerCase().includes(q) ||
-        f.question.toLowerCase().includes(q) ||
-        (f.tags ?? []).some((t) => t.toLowerCase().includes(q))
-    )
-    .slice(0, 5)
-    .map((f) => ({
-      id: `forecast-${f.id}`,
-      group: 'forecasts' as const,
-      label: f.title,
-      sublabel: f.region,
-      rightLabel: `${f.probability}%`,
-      rightClass:
-        f.probability >= 70
-          ? 'text-red-400'
-          : f.probability >= 50
-          ? 'text-orange-400'
-          : f.probability >= 30
-          ? 'text-amber-400'
-          : 'text-green-400',
-      href: `/forecasts/${f.id}`,
-      Icon: Target,
-    }))
-  results.push(...forecastResults)
-
-  return results
+const SEVERITY_CLASS: Record<string, string> = {
+  critical: 'text-red-400',
+  high: 'text-orange-400',
+  moderate: 'text-amber-400',
+  low: 'text-blue-400',
 }
 
 export function CommandPalette() {
   const { open, openPalette, closePalette } = useCommandPalette()
   const [query, setQuery] = useState('')
+  const [results, setResults] = useState<PaletteResult[]>(PAGE_RESULTS)
+  const [loading, setLoading] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const router = useRouter()
-
-  const results = useMemo(() => buildResults(query), [query])
 
   // Reset on open
   useEffect(() => {
     if (!open) return
     setQuery('')
+    setResults(PAGE_RESULTS)
     setActiveIndex(0)
     const t = setTimeout(() => inputRef.current?.focus(), 10)
     return () => clearTimeout(t)
   }, [open])
 
-  // ⌘K global shortcut
+  // ⌘K / Ctrl+K global shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -168,6 +90,102 @@ export function CommandPalette() {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [open, openPalette, closePalette])
+
+  // Debounced search against real API
+  const handleQueryChange = useCallback((value: string) => {
+    setQuery(value)
+    setActiveIndex(0)
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    if (!value.trim()) {
+      setResults(PAGE_RESULTS)
+      setLoading(false)
+      return
+    }
+
+    // Filter pages immediately while API loads
+    const matchedPages = PAGE_RESULTS.filter((p) =>
+      p.label.toLowerCase().includes(value.toLowerCase())
+    )
+    setResults(matchedPages)
+    setLoading(true)
+
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(value)}&limit=5`)
+        if (!res.ok) return
+        const data = await res.json()
+
+        const apiResults: PaletteResult[] = []
+
+        for (const country of data.countries ?? []) {
+          apiResults.push({
+            id: `country-${country.id}`,
+            group: 'countries',
+            label: country.name,
+            sublabel: country.capital ?? undefined,
+            rightLabel: `${country.riskLevel} · ${country.overallRiskScore}`,
+            rightClass: getRiskTextClass(country.riskLevel),
+            href: `/countries/${country.slug}`,
+            Icon: Flag,
+          })
+        }
+
+        for (const region of data.regions ?? []) {
+          apiResults.push({
+            id: `region-${region.id}`,
+            group: 'regions',
+            label: region.name,
+            sublabel: `${region.activeEventCount} events`,
+            rightLabel: String(region.overallRiskScore),
+            rightClass: getRiskTextClass(region.riskLevel),
+            href: `/regions/${region.slug}`,
+            Icon: Map,
+          })
+        }
+
+        for (const event of data.events ?? []) {
+          apiResults.push({
+            id: `event-${event.id}`,
+            group: 'events',
+            label: event.title,
+            sublabel: event.date,
+            rightLabel: event.severity,
+            rightClass: SEVERITY_CLASS[event.severity] ?? 'text-[var(--color-text-tertiary)]',
+            href: `/events/${event.id}`,
+            Icon: Zap,
+          })
+        }
+
+        for (const forecast of data.forecasts ?? []) {
+          apiResults.push({
+            id: `forecast-${forecast.id}`,
+            group: 'forecasts',
+            label: forecast.title,
+            sublabel: forecast.timeHorizon ?? undefined,
+            rightLabel: `${forecast.probability}%`,
+            rightClass:
+              forecast.probability >= 70
+                ? 'text-red-400'
+                : forecast.probability >= 50
+                ? 'text-orange-400'
+                : forecast.probability >= 30
+                ? 'text-amber-400'
+                : 'text-green-400',
+            href: `/forecasts/${forecast.id}`,
+            Icon: Target,
+          })
+        }
+
+        setResults([...matchedPages, ...apiResults])
+      } catch {
+        // On error keep the page results
+      } finally {
+        setLoading(false)
+      }
+    }, 220)
+  }, [])
 
   const navigate = useCallback(
     (result: PaletteResult) => {
@@ -194,13 +212,10 @@ export function CommandPalette() {
 
   if (!open) return null
 
-  // Group results for rendering
-  const groups = ['pages', 'countries', 'events', 'forecasts'] as const
-  const grouped = groups
+  const grouped = GROUP_ORDER
     .map((g) => ({ group: g, items: results.filter((r) => r.group === g) }))
     .filter((g) => g.items.length > 0)
 
-  // Flat counter for keyboard activeIndex tracking
   let resultIndex = 0
 
   return (
@@ -208,21 +223,23 @@ export function CommandPalette() {
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
       onClick={closePalette}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
-      {/* Panel */}
       <div
         className="relative w-full max-w-[560px] mx-4 bg-[var(--color-bg-surface)] border border-[var(--color-border-strong)] rounded-xl shadow-2xl overflow-hidden animate-slide-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--color-border)]">
-          <Search className="w-4 h-4 text-[var(--color-text-tertiary)] flex-shrink-0" strokeWidth={1.75} />
+          {loading ? (
+            <Loader2 className="w-4 h-4 text-[var(--color-text-tertiary)] flex-shrink-0 animate-spin" strokeWidth={1.75} />
+          ) : (
+            <Search className="w-4 h-4 text-[var(--color-text-tertiary)] flex-shrink-0" strokeWidth={1.75} />
+          )}
           <input
             ref={inputRef}
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => handleQueryChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search countries, events, forecasts..."
             className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] outline-none"
@@ -234,7 +251,7 @@ export function CommandPalette() {
 
         {/* Results */}
         <div className="max-h-[400px] overflow-y-auto py-1">
-          {results.length === 0 ? (
+          {results.length === 0 && !loading ? (
             <div className="px-4 py-8 text-center">
               <p className="text-sm text-[var(--color-text-tertiary)]">
                 No results for &ldquo;{query}&rdquo;
@@ -279,12 +296,7 @@ export function CommandPalette() {
                         )}
                       </div>
                       {result.rightLabel && (
-                        <span
-                          className={cn(
-                            'text-[11px] font-mono flex-shrink-0',
-                            result.rightClass ?? 'text-[var(--color-text-tertiary)]'
-                          )}
-                        >
+                        <span className={cn('text-[11px] font-mono flex-shrink-0', result.rightClass ?? 'text-[var(--color-text-tertiary)]')}>
                           {result.rightLabel}
                         </span>
                       )}
@@ -296,11 +308,12 @@ export function CommandPalette() {
           )}
         </div>
 
-        {/* Footer hint */}
+        {/* Footer */}
         <div className="px-4 py-2 border-t border-[var(--color-border)] flex items-center gap-4 text-[var(--color-text-tertiary)]">
           <span className="text-[10px]">↑↓ navigate</span>
           <span className="text-[10px]">↵ open</span>
           <span className="text-[10px]">ESC close</span>
+          <span className="ml-auto text-[10px] font-mono opacity-50">⌘K</span>
         </div>
       </div>
     </div>

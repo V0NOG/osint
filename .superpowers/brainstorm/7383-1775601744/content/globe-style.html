@@ -1,0 +1,122 @@
+<h2>Globe Visual Style — Phase 4</h2>
+<p class="subtitle">The current globe is a dark sphere with colored dot markers. What level of geographic detail should Phase 4 add?</p>
+
+<div class="cards">
+
+  <!-- Option A: Keep markers, add arcs + polish -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:180px;position:relative;overflow:hidden;">
+        <!-- Globe circle -->
+        <div style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #0d2040 0%, #060e1e 60%, #020609 100%);border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden;flex-shrink:0;">
+          <!-- Grid lines -->
+          <div style="position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent,transparent 12px,rgba(42,80,128,0.08) 12px,rgba(42,80,128,0.08) 13px),repeating-linear-gradient(90deg,transparent,transparent 12px,rgba(42,80,128,0.08) 12px,rgba(42,80,128,0.08) 13px);"></div>
+          <!-- Atmosphere glow -->
+          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, transparent 55%, rgba(30,80,180,0.25) 75%, rgba(10,40,120,0.12) 100%);"></div>
+          <!-- Dot markers -->
+          <div style="position:absolute;top:28%;left:52%;width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 10px #ef4444,0 0 20px rgba(239,68,68,0.5);"></div>
+          <div style="position:absolute;top:25%;left:55%;width:5px;height:5px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;opacity:0.8;animation:pulse 2s infinite;"></div>
+          <div style="position:absolute;top:32%;left:72%;width:6px;height:6px;border-radius:50%;background:#f97316;box-shadow:0 0 8px #f97316;"></div>
+          <div style="position:absolute;top:40%;left:66%;width:5px;height:5px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px #f59e0b;"></div>
+          <div style="position:absolute;top:55%;left:40%;width:5px;height:5px;border-radius:50%;background:#f97316;box-shadow:0 0 6px #f97316;"></div>
+          <div style="position:absolute;top:35%;left:30%;width:4px;height:4px;border-radius:50%;background:#eab308;box-shadow:0 0 5px #eab308;"></div>
+          <!-- Arc line -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 130 130">
+            <path d="M 68 36 Q 85 10 93 42" fill="none" stroke="#3b82f6" stroke-width="1" opacity="0.6" stroke-dasharray="3,2"/>
+            <path d="M 78 41 Q 60 20 39 32" fill="none" stroke="#ef4444" stroke-width="0.8" opacity="0.5" stroke-dasharray="3,2"/>
+          </svg>
+        </div>
+        <div style="position:absolute;bottom:10px;right:10px;background:rgba(15,17,23,0.85);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:6px 10px;">
+          <div style="display:flex;flex-direction:column;gap:3px;">
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:6px;height:6px;border-radius:50%;background:#ef4444;box-shadow:0 0 5px #ef4444;"></div><span style="color:#9ca3af;font-size:9px;">Critical</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:6px;height:6px;border-radius:50%;background:#f97316;"></div><span style="color:#9ca3af;font-size:9px;">High</span></div>
+            <div style="display:flex;align-items:center;gap:5px;"><div style="width:6px;height:6px;border-radius:50%;background:#3b82f6;"></div><span style="color:#9ca3af;font-size:9px;">Event arc</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Markers + Event Arcs (Additive)</h3>
+      <p>Keep the current dot-marker approach. Phase 4 adds: animated event arcs between related countries, improved hover glow on markers, and a richer country tooltip. No GeoJSON needed — fast, focused, done in one phase.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Country boundary outlines on sphere -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:180px;position:relative;overflow:hidden;">
+        <div style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #0d2040 0%, #060e1e 60%, #020609 100%);border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden;flex-shrink:0;">
+          <!-- Atmosphere -->
+          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, transparent 55%, rgba(30,80,180,0.25) 75%, rgba(10,40,120,0.12) 100%);"></div>
+          <!-- Simplified country outlines as paths -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 130 130">
+            <!-- Europe/Russia simplified -->
+            <path d="M 60 22 L 75 20 L 90 25 L 88 35 L 75 38 L 65 35 L 58 28 Z" fill="rgba(239,68,68,0.15)" stroke="#ef4444" stroke-width="0.6" opacity="0.8"/>
+            <!-- Middle East -->
+            <path d="M 78 38 L 88 36 L 90 45 L 82 48 L 76 43 Z" fill="rgba(249,115,22,0.12)" stroke="#f97316" stroke-width="0.5" opacity="0.7"/>
+            <!-- East Asia -->
+            <path d="M 92 28 L 105 26 L 108 36 L 98 40 L 90 35 Z" fill="rgba(249,115,22,0.12)" stroke="#f97316" stroke-width="0.5" opacity="0.7"/>
+            <!-- Africa -->
+            <path d="M 62 42 L 75 40 L 78 58 L 70 65 L 60 58 L 58 48 Z" fill="rgba(234,179,8,0.1)" stroke="#eab308" stroke-width="0.5" opacity="0.6"/>
+            <!-- Americas -->
+            <path d="M 28 28 L 45 26 L 48 42 L 38 50 L 25 44 Z" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="0.5" opacity="0.6"/>
+          </svg>
+          <!-- Dot markers on top -->
+          <div style="position:absolute;top:25%;left:55%;width:5px;height:5px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444;"></div>
+          <div style="position:absolute;top:30%;left:72%;width:4px;height:4px;border-radius:50%;background:#f97316;box-shadow:0 0 5px #f97316;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Country Boundaries on Globe</h3>
+      <p>Load GeoJSON world data and render country outlines as polygons on the sphere surface, color-filled by risk level. Countries highlight on hover. Dot markers remain for high/critical pulse. Cinematic, intelligence-terminal feel — looks like a real geospatial tool.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Texture-based world map -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:16px;display:flex;align-items:center;justify-content:center;min-height:180px;position:relative;overflow:hidden;">
+        <div style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 35%, #0d2040 0%, #060e1e 60%, #020609 100%);border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden;flex-shrink:0;">
+          <!-- Atmosphere -->
+          <div style="position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle, transparent 55%, rgba(30,80,180,0.3) 75%, rgba(10,40,120,0.15) 100%);"></div>
+          <!-- Simulated continents as texture blobs -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 130 130">
+            <!-- Europe -->
+            <ellipse cx="68" cy="30" rx="14" ry="10" fill="rgba(30,60,100,0.6)" stroke="none"/>
+            <!-- Asia -->
+            <ellipse cx="93" cy="33" rx="22" ry="14" fill="rgba(30,60,100,0.6)" stroke="none"/>
+            <!-- Africa -->
+            <ellipse cx="67" cy="52" rx="11" ry="14" fill="rgba(30,60,100,0.6)" stroke="none"/>
+            <!-- Americas -->
+            <ellipse cx="35" cy="38" rx="12" ry="18" fill="rgba(30,60,100,0.6)" stroke="none"/>
+            <!-- Australia -->
+            <ellipse cx="103" cy="58" rx="9" ry="7" fill="rgba(30,60,100,0.6)" stroke="none"/>
+          </svg>
+          <!-- Risk color overlay on continents -->
+          <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 130 130">
+            <ellipse cx="75" cy="28" rx="8" ry="6" fill="rgba(239,68,68,0.35)"/>
+            <ellipse cx="95" cy="34" rx="7" ry="5" fill="rgba(249,115,22,0.3)"/>
+          </svg>
+          <!-- Dot markers -->
+          <div style="position:absolute;top:20%;left:55%;width:5px;height:5px;border-radius:50%;background:#ef4444;box-shadow:0 0 8px #ef4444;"></div>
+        </div>
+        <div style="position:absolute;top:10px;left:10px;background:rgba(15,17,23,0.85);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 8px;">
+          <span style="color:#6b7280;font-size:9px;">Uses map texture + risk overlay</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Texture + Risk Overlay</h3>
+      <p>Apply a dark world map texture to the sphere, then overlay a second risk-colored texture (generated from country risk scores). Visually rich with minimal Three.js complexity. Less interactive than polygon approach — can't click individual country shapes.</p>
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(2); }
+}
+</style>

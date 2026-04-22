@@ -3,36 +3,25 @@ import Link from 'next/link'
 import { ArrowLeft, AlertTriangle, Activity, Clock, Globe } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Panel } from '@/components/ui/Panel'
-import { mockRegions } from '@/lib/mock-data/regions'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
+import { EventCard } from '@/components/event/EventCard'
+import { getRegionBySlug } from '@/lib/db/regions'
 import { formatDate } from '@/lib/utils/format'
 import { getRiskColor, getProbabilityColor } from '@/lib/utils/risk'
-import type { Country } from '@/lib/types'
 
 interface PageProps {
   params: { slug: string }
 }
 
-export async function generateStaticParams() {
-  return mockRegions.map((r) => ({ slug: r.slug }))
-}
-
 export async function generateMetadata({ params }: PageProps) {
-  const region = mockRegions.find((r) => r.slug === params.slug)
+  const region = await getRegionBySlug(params.slug)
   return { title: region?.name ?? 'Region' }
 }
 
-export default function RegionDetailPage({ params }: PageProps) {
-  const region = mockRegions.find((r) => r.slug === params.slug)
+export default async function RegionDetailPage({ params }: PageProps) {
+  const region = await getRegionBySlug(params.slug)
   if (!region) notFound()
 
-  const memberCountries = region.countries
-    .map((id) => mockCountries.find((c) => c.id === id))
-    .filter((c): c is Country => c !== undefined)
-
-  const activeForecasts = mockForecasts.filter((f) => f.region === region.id)
-
+  const { memberCountries, forecasts: activeForecasts, recentEvents } = region
   const riskColor = getRiskColor(region.riskLevel)
 
   return (
@@ -114,6 +103,28 @@ export default function RegionDetailPage({ params }: PageProps) {
               </p>
             </div>
           </Panel>
+
+          {/* Recent events */}
+          {recentEvents.length > 0 && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-sm font-semibold text-[var(--color-text-primary)]">
+                  Recent Events
+                </h2>
+                <Link
+                  href="/events"
+                  className="text-[11px] text-[var(--color-accent-blue)] hover:text-blue-300 font-medium transition-colors"
+                >
+                  View all →
+                </Link>
+              </div>
+              <div className="space-y-2.5">
+                {recentEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Member countries */}
           <section>

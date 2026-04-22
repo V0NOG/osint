@@ -5,9 +5,8 @@ import Link from 'next/link'
 import { X } from 'lucide-react'
 import { GlobeFallback } from './Globe/GlobeFallback'
 import { countriesToMarkers } from './Globe'
-import type { GlobeCountryMarker } from './Globe'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockArcs } from '@/lib/mock-data/arcs'
+import type { GlobeCountryMarker, GlobeArc } from './Globe'
+import type { Country, GeopoliticalEvent } from '@/lib/types'
 import type { CountryRiskMap } from './Globe/GlobeCountries'
 import { getRiskTextClass } from '@/lib/utils/risk'
 import { Badge } from '@/components/ui/Badge'
@@ -46,10 +45,11 @@ const RISK_LEGEND: { level: string; hex: string }[] = [
 
 interface CountryTooltipProps {
   country: GlobeCountryMarker
+  eventCount: number
   onClose: () => void
 }
 
-function CountryTooltip({ country, onClose }: CountryTooltipProps) {
+function CountryTooltip({ country, eventCount, onClose }: CountryTooltipProps) {
   return (
     <div className="absolute bottom-4 left-4 z-20 w-60 bg-[var(--color-bg-surface)]/95 backdrop-blur-md border border-[var(--color-border-strong)] rounded-xl p-4 shadow-2xl animate-fade-in pointer-events-auto">
       <div className="flex items-start justify-between gap-2 mb-3">
@@ -81,8 +81,11 @@ function CountryTooltip({ country, onClose }: CountryTooltipProps) {
         </span>
       </div>
 
-      <div className="text-[11px] text-[var(--color-text-tertiary)] mb-3">
-        {country.alertCount} active alert{country.alertCount !== 1 ? 's' : ''}
+      <div className="text-[11px] text-[var(--color-text-tertiary)] mb-3 flex items-center gap-3">
+        <span>{country.alertCount} active alert{country.alertCount !== 1 ? 's' : ''}</span>
+        {eventCount > 0 && (
+          <span className="text-amber-400">{eventCount} recent event{eventCount !== 1 ? 's' : ''}</span>
+        )}
       </div>
 
       <Link
@@ -97,11 +100,12 @@ function CountryTooltip({ country, onClose }: CountryTooltipProps) {
 
 interface WorldGlobeProps {
   className?: string
+  countries?: Country[]
+  events?: GeopoliticalEvent[]
   onSelect?: (marker: GlobeCountryMarker | null) => void
 }
 
-export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
-  // Defer render until client to avoid hydration mismatch
+export function WorldGlobe({ className, countries = [], events = [], onSelect }: WorldGlobeProps) {
   const [mounted, setMounted] = useState(false)
   const webGLSupported = useWebGLSupport()
 
@@ -109,18 +113,55 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
   const [selectedCountry, setSelectedCountry] = useState<GlobeCountryMarker | null>(null)
   const [cursor, setCursor] = useState('default')
 
-  const markers = useMemo(() => countriesToMarkers(mockCountries), [])
+  // Use real countries when available, fall back to empty
+  const markers = useMemo(() => countriesToMarkers(countries), [countries])
 
   const countryRiskMap = useMemo<CountryRiskMap>(
-    () => Object.fromEntries(mockCountries.map((c) => [c.iso3, c.riskLevel])),
-    []
+    () => Object.fromEntries(countries.map((c) => [c.iso3, c.riskLevel])),
+    [countries]
   )
+
+  // Count ingested events per country ID for tooltip display
+  const eventCountByCountryId = useMemo(() => {
+    const map: Record<string, number> = {}
+    for (const ev of events) {
+      for (const cid of ev.countries) {
+        map[cid] = (map[cid] ?? 0) + 1
+      }
+    }
+    return map
+  }, [events])
+
+  // Build arcs from events that span multiple countries (up to 30)
+  const eventArcs = useMemo<GlobeArc[]>(() => {
+    // Build id→marker lookup from already-computed markers
+    const markerById: Record<string, GlobeCountryMarker> = {}
+    for (const m of markers) markerById[m.countryId] = m
+
+    const arcs: GlobeArc[] = []
+    for (const ev of events) {
+      if (ev.countries.length < 2) continue
+      const [aid, bid] = ev.countries
+      const ma = markerById[aid], mb = markerById[bid]
+      if (!ma || !mb) continue
+      const color = ev.severity === 'critical' ? '#ef4444'
+        : ev.severity === 'high' ? '#f97316'
+        : '#f59e0b'
+      arcs.push({
+        id: ev.id,
+        startLat: ma.lat, startLon: ma.lon,
+        endLat: mb.lat, endLon: mb.lon,
+        color,
+      })
+      if (arcs.length >= 30) break
+    }
+    return arcs
+  }, [events, markers])
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Forward internal selection to parent when it changes
   useEffect(() => {
     onSelect?.(selectedCountry)
   }, [selectedCountry, onSelect])
@@ -141,9 +182,7 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
   }, [])
 
   const displayedCountry = selectedCountry ?? hoveredCountry
-  const isInteracting = hoveredCountry !== null
 
-  // Before mount or WebGL unavailable: show static fallback
   if (!mounted || webGLSupported === false) {
     return (
       <div className={`h-full ${className ?? ''}`} style={{ minHeight: 480 }}>
@@ -157,29 +196,30 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
       className={`relative w-full h-full ${className ?? ''}`}
       style={{ minHeight: 480, cursor }}
     >
-      {/* Depth gradient background — blends canvas into page bg */}
       <div className="absolute inset-0 bg-gradient-to-b from-blue-950/15 via-transparent to-[var(--color-bg-base)]/60 rounded-xl pointer-events-none z-0" />
 
-      {/* 3D canvas */}
       <GlobeCanvas
         markers={markers}
-        arcs={mockArcs}
+        arcs={eventArcs}
         countryRiskMap={countryRiskMap}
         hoveredId={hoveredCountry?.countryId ?? null}
         selectedId={selectedCountry?.countryId ?? null}
-        isInteracting={isInteracting}
+        isInteracting={hoveredCountry !== null}
         onHover={handleHover}
         onSelect={handleSelect}
         style={{ minHeight: 480, width: '100%', height: '100%' }}
         className="w-full h-full"
       />
 
-      {/* Country tooltip — shown on hover or select */}
       {displayedCountry && (
-        <CountryTooltip country={displayedCountry} onClose={handleCloseTooltip} />
+        <CountryTooltip
+          country={displayedCountry}
+          eventCount={eventCountByCountryId[displayedCountry.countryId] ?? 0}
+          onClose={handleCloseTooltip}
+        />
       )}
 
-      {/* Risk level legend — top-right corner */}
+      {/* Risk level legend */}
       <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5 bg-[var(--color-bg-surface)]/80 backdrop-blur-sm border border-[var(--color-border)] rounded-lg px-3 py-2.5 pointer-events-none">
         {RISK_LEGEND.map(({ level, hex }) => (
           <div key={level} className="flex items-center gap-2">
@@ -194,7 +234,6 @@ export function WorldGlobe({ className, onSelect }: WorldGlobeProps) {
         ))}
       </div>
 
-      {/* Hover hint — shown initially, hides once user interacts */}
       {!displayedCountry && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/8 backdrop-blur-sm">

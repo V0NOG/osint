@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ChevronUp, ChevronDown, Scale } from 'lucide-react'
+import { WatchButton } from '@/components/ui/WatchButton'
 import { Badge } from '@/components/ui/Badge'
 import { Panel } from '@/components/ui/Panel'
 import { EventCard } from '@/components/event/EventCard'
 import { ProbabilityChart } from '@/components/forecast/ProbabilityChart'
 import { ResolveModal, type ResolveOutcome } from '@/components/forecast/ResolveModal'
+import { UpdateForecastModal } from '@/components/forecast/UpdateForecastModal'
 import { formatDate } from '@/lib/utils/format'
 import { cn } from '@/lib/utils/cn'
 import type { Forecast, Country, GeopoliticalEvent, ForecastHistoryEntry } from '@/lib/types'
@@ -65,32 +67,52 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
   const [localStatus, setLocalStatus] = useState(forecast.status)
   const [localHistory, setLocalHistory] = useState<ForecastHistoryEntry[]>(forecast.history)
   const [resolveModalOpen, setResolveModalOpen] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
+  const [updateModalOpen, setUpdateModalOpen] = useState(false)
+  const [localProbability, setLocalProbability] = useState(forecast.probability)
+  const [localConfidence, setLocalConfidence] = useState(forecast.confidenceLevel)
+  const [submitting, setSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (toast) {
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
-      toastTimerRef.current = setTimeout(() => setToast(null), 3000)
+      toastTimerRef.current = setTimeout(() => setToast(null), 4000)
     }
     return () => {
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     }
   }, [toast])
 
-  const handleResolve = (outcome: ResolveOutcome) => {
-    setLocalStatus('resolved')
-    setLocalHistory((prev) => [
-      ...prev,
-      {
-        date: outcome.resolutionDate,
-        probability: forecast.probability,
-        confidenceLevel: forecast.confidenceLevel,
-        changeReason: outcome.analystNote,
-      },
-    ])
-    setResolveModalOpen(false)
-    setToast(`Forecast resolved as ${outcome.result.toUpperCase()}`)
+  const handleResolve = async (outcome: ResolveOutcome) => {
+    setSubmitting(true)
+    try {
+      const res = await fetch(`/api/forecasts/${forecast.id}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(outcome),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error ?? 'Failed to resolve')
+      }
+      setLocalStatus('resolved')
+      setLocalHistory((prev) => [
+        ...prev,
+        {
+          date: outcome.resolutionDate,
+          probability: forecast.probability,
+          confidenceLevel: forecast.confidenceLevel,
+          changeReason: `Resolved ${outcome.result.toUpperCase()}: ${outcome.analystNote}`,
+        },
+      ])
+      setResolveModalOpen(false)
+      setToast({ message: `Forecast resolved as ${outcome.result.toUpperCase()}`, type: 'success' })
+    } catch (err) {
+      setToast({ message: err instanceof Error ? err.message : 'Resolve failed', type: 'error' })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleCloseResolveModal = useCallback(() => setResolveModalOpen(false), [])
@@ -114,7 +136,8 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
         <div className="space-y-4">
           {/* Hero */}
           <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
               <Badge variant={`status-${localStatus}`} size="md">{localStatus}</Badge>
               <span className="text-[10px] font-medium text-[var(--color-text-tertiary)] bg-[var(--color-bg-elevated)] border border-[var(--color-border)] rounded px-2 py-0.5 uppercase tracking-wider">
                 {forecast.timeHorizon}
@@ -125,6 +148,12 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
                 <>
                   <span className="text-xs text-[var(--color-text-tertiary)]">·</span>
                   <button
+                    onClick={() => setUpdateModalOpen(true)}
+                    className="text-xs font-medium text-[var(--color-text-tertiary)] border border-[var(--color-border)] rounded px-2 py-0.5 hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-secondary)] transition-colors"
+                  >
+                    Update
+                  </button>
+                  <button
                     onClick={() => setResolveModalOpen(true)}
                     className="text-xs font-medium text-blue-400 border border-blue-500/30 rounded px-2 py-0.5 hover:bg-blue-500/10 transition-colors"
                   >
@@ -132,6 +161,8 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
                   </button>
                 </>
               )}
+              </div>
+              <WatchButton type="forecast" id={forecast.id} size="sm" />
             </div>
 
             <h1 className="text-xl font-bold text-[var(--color-text-primary)] leading-snug mb-2">
@@ -386,11 +417,37 @@ export function ForecastDetailView({ forecast, countries, relatedEvents }: Forec
         isOpen={resolveModalOpen}
         onClose={handleCloseResolveModal}
         onResolve={handleResolve}
+        submitting={submitting}
+      />
+
+      <UpdateForecastModal
+        forecast={{ ...forecast, probability: localProbability, confidenceLevel: localConfidence }}
+        isOpen={updateModalOpen}
+        onClose={() => setUpdateModalOpen(false)}
+        onUpdated={(patch) => {
+          setLocalProbability(patch.probability)
+          setLocalConfidence(patch.confidenceLevel)
+          setLocalHistory((prev) => [
+            ...prev,
+            {
+              date: new Date().toISOString().slice(0, 10),
+              probability: patch.probability,
+              confidenceLevel: patch.confidenceLevel,
+              changeReason: patch.changeReason,
+            },
+          ])
+          setToast({ message: 'Forecast updated', type: 'success' })
+        }}
       />
 
       {toast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[var(--color-bg-surface)] border border-green-500/30 rounded-lg px-4 py-3 text-sm text-green-300 font-medium shadow-xl">
-          {toast}
+        <div className={cn(
+          'fixed bottom-6 right-6 z-50 bg-[var(--color-bg-surface)] rounded-lg px-4 py-3 text-sm font-medium shadow-xl border',
+          toast.type === 'error'
+            ? 'border-red-500/30 text-red-300'
+            : 'border-green-500/30 text-green-300'
+        )}>
+          {toast.message}
         </div>
       )}
     </div>

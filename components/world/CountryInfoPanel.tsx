@@ -67,7 +67,8 @@ export function CountryInfoPanel({ country, onClose }: CountryInfoPanelProps) {
   return (
     <div
       className={cn(
-        'absolute bottom-4 right-4 w-72 z-20',
+        'absolute bottom-4 right-4 w-72 z-20 flex flex-col',
+        'max-h-[calc(100%-2rem)]',
         'bg-[var(--color-bg-overlay)]/90 backdrop-blur-xl',
         'border border-[var(--color-border-strong)] rounded-xl',
         'shadow-2xl shadow-black/50',
@@ -75,7 +76,7 @@ export function CountryInfoPanel({ country, onClose }: CountryInfoPanelProps) {
       )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-2 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
+      <div className="flex-shrink-0 flex items-start justify-between gap-2 px-4 pt-4 pb-3 border-b border-[var(--color-border)]">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-7 h-5 rounded-sm bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
@@ -98,6 +99,9 @@ export function CountryInfoPanel({ country, onClose }: CountryInfoPanelProps) {
           <X className="w-3.5 h-3.5" />
         </button>
       </div>
+
+      {/* Scrollable body */}
+      <div className="flex-1 overflow-y-auto min-h-0">
 
       {/* Risk score + badges */}
       <div className="px-4 py-3 flex items-center justify-between gap-3 border-b border-[var(--color-border)]">
@@ -169,8 +173,10 @@ export function CountryInfoPanel({ country, onClose }: CountryInfoPanelProps) {
         </div>
       </div>
 
+      </div>{/* end scrollable body */}
+
       {/* CTA */}
-      <div className="px-4 py-3">
+      <div className="flex-shrink-0 px-4 py-3 border-t border-[var(--color-border)]">
         <Link
           href={`/countries/${country.slug}`}
           className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-[var(--color-accent-blue)]/12 border border-[var(--color-accent-blue)]/20 text-[var(--color-accent-blue)] hover:bg-[var(--color-accent-blue)]/20 hover:border-[var(--color-accent-blue)]/35 transition-all duration-150 group"

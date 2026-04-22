@@ -1,6 +1,6 @@
 import { prisma } from './client'
-import { mapRegion, mapCountry, mapForecast } from './mappers'
-import type { Region, Country, Forecast } from '@/lib/types'
+import { mapRegion, mapCountry, mapForecast, mapEvent } from './mappers'
+import type { Region, Country, Forecast, GeopoliticalEvent } from '@/lib/types'
 
 export async function getRegions(): Promise<Region[]> {
   const regions = await prisma.region.findMany({
@@ -13,6 +13,7 @@ export async function getRegions(): Promise<Region[]> {
 export type RegionDetail = Region & {
   memberCountries: Country[]
   forecasts: Forecast[]
+  recentEvents: GeopoliticalEvent[]
 }
 
 export async function getRegionBySlug(slug: string): Promise<RegionDetail | null> {
@@ -27,9 +28,18 @@ export async function getRegionBySlug(slug: string): Promise<RegionDetail | null
   })
   if (!region) return null
 
+  const countryIds = region.countries.map((c) => c.id)
+  const events = await prisma.geopoliticalEvent.findMany({
+    where: { countries: { some: { id: { in: countryIds } } } },
+    include: { sources: true, countries: true, actors: true, relatedForecasts: true },
+    orderBy: { date: 'desc' },
+    take: 10,
+  })
+
   return {
     ...mapRegion(region),
     memberCountries: region.countries.map(mapCountry),
     forecasts: region.forecasts.map(mapForecast),
+    recentEvents: events.map(mapEvent),
   }
 }

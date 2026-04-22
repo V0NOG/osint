@@ -1,8 +1,11 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
+import { SessionProvider } from 'next-auth/react'
 import { SidebarProvider, useSidebar } from '@/contexts/sidebar'
 import { CommandPaletteProvider } from '@/contexts/command-palette'
 import { AlertDrawerProvider } from '@/contexts/alert-drawer'
+import { WatchlistProvider } from '@/contexts/watchlist'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 import { CommandPalette } from './CommandPalette'
@@ -39,13 +42,24 @@ function ShellLayout({ children }: AppShellProps) {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const pathname = usePathname()
+  const isAuthRoute = pathname.startsWith('/auth/')
+
+  if (isAuthRoute) {
+    return <SessionProvider>{children}</SessionProvider>
+  }
+
   return (
-    <SidebarProvider>
-      <CommandPaletteProvider>
-        <AlertDrawerProvider>
-          <ShellLayout>{children}</ShellLayout>
-        </AlertDrawerProvider>
-      </CommandPaletteProvider>
-    </SidebarProvider>
+    <SessionProvider>
+      <SidebarProvider>
+        <CommandPaletteProvider>
+          <AlertDrawerProvider>
+            <WatchlistProvider>
+              <ShellLayout>{children}</ShellLayout>
+            </WatchlistProvider>
+          </AlertDrawerProvider>
+        </CommandPaletteProvider>
+      </SidebarProvider>
+    </SessionProvider>
   )
 }

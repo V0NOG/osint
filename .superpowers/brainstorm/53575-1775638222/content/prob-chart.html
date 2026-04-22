@@ -1,0 +1,222 @@
+<h2>Probability History Chart</h2>
+<p class="subtitle">The forecast detail page already has a text-based revision history. How should the visual chart look?</p>
+
+<div class="cards">
+
+  <!-- Option A: Sparkline in hero -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:12px;font-family:monospace;font-size:10px;color:#6b7280;min-height:280px;">
+
+        <div style="color:#4b5563;margin-bottom:8px;font-size:9px;">Forecasts / <span style="color:#60a5fa;">Russia-Ukraine ceasefire</span></div>
+
+        <!-- Hero with inline sparkline -->
+        <div style="background:linear-gradient(135deg,#0d1f3c,#0a1628);border:1px solid rgba(96,165,250,0.25);border-radius:8px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:1px 6px;color:#22c55e;font-size:8px;font-weight:600;">ACTIVE</div>
+            <div style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:4px;padding:1px 6px;color:#60a5fa;font-size:8px;">Q2 2026</div>
+          </div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:700;margin-bottom:10px;">Russia-Ukraine ceasefire before Q3 2026</div>
+
+          <!-- Inline probability row + sparkline -->
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.2);border-radius:6px;padding:8px;margin-bottom:8px;">
+            <div>
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;margin-bottom:1px;">Probability</div>
+              <div style="font-size:26px;font-weight:900;color:#60a5fa;line-height:1;">18%</div>
+            </div>
+            <div style="flex:1;">
+              <div style="background:#1e2d3d;border-radius:3px;height:5px;">
+                <div style="background:linear-gradient(90deg,#3b82f6,#60a5fa);width:18%;height:100%;border-radius:3px;"></div>
+              </div>
+            </div>
+            <!-- Sparkline -->
+            <div style="flex-shrink:0;">
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;margin-bottom:3px;">History</div>
+              <svg width="80" height="28" viewBox="0 0 80 28">
+                <polyline points="0,22 13,19 26,8 39,6 52,10 65,12 80,14" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+                <circle cx="80" cy="14" r="2.5" fill="#60a5fa"/>
+                <line x1="0" y1="0" x2="0" y2="28" stroke="#1e3a5f" stroke-width="0.5"/>
+                <line x1="80" y1="0" x2="80" y2="28" stroke="#1e3a5f" stroke-width="0.5"/>
+              </svg>
+            </div>
+            <div>
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;margin-bottom:1px;">Confidence</div>
+              <div style="color:#eab308;font-size:9px;font-weight:600;">MEDIUM</div>
+            </div>
+            <div>
+              <div style="color:#4b5563;font-size:7px;text-transform:uppercase;margin-bottom:1px;">Revision</div>
+              <div style="color:#9ca3af;font-size:9px;">v7</div>
+            </div>
+          </div>
+          <div style="color:#6b7280;font-size:8px;font-style:italic;">Will a formal ceasefire agreement...be signed before July 1, 2026?</div>
+        </div>
+
+        <!-- Body preview -->
+        <div style="display:grid;grid-template-columns:1fr 140px;gap:8px;">
+          <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+            <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">Rationale</div>
+            <div style="color:#6b7280;font-size:7px;line-height:1.5;">Both parties lack sufficient incentive to accept ceasefire terms...</div>
+          </div>
+          <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+            <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">Revision History</div>
+            <div style="color:#6b7280;font-size:7px;line-height:1.6;">v7 · Mar 30<br/>v6 · Mar 15<br/>v5 · Feb 28</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Sparkline in hero</h3>
+      <p>A compact sparkline sits directly in the probability row of the hero banner. Probability trend is visible immediately without scrolling. The sidebar revision history remains text-only.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Full chart panel in sidebar -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:12px;font-family:monospace;font-size:10px;color:#6b7280;min-height:280px;">
+
+        <div style="color:#4b5563;margin-bottom:8px;font-size:9px;">Forecasts / <span style="color:#60a5fa;">Russia-Ukraine ceasefire</span></div>
+
+        <!-- Hero (no sparkline) -->
+        <div style="background:linear-gradient(135deg,#0d1f3c,#0a1628);border:1px solid rgba(96,165,250,0.25);border-radius:8px;padding:14px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:1px 6px;color:#22c55e;font-size:8px;font-weight:600;">ACTIVE</div>
+            <div style="background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.25);border-radius:4px;padding:1px 6px;color:#60a5fa;font-size:8px;">Q2 2026</div>
+          </div>
+          <div style="color:#f1f5f9;font-size:12px;font-weight:700;margin-bottom:10px;">Russia-Ukraine ceasefire before Q3 2026</div>
+          <div style="display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.2);border-radius:6px;padding:8px;margin-bottom:8px;">
+            <div><div style="color:#4b5563;font-size:7px;margin-bottom:1px;">Probability</div><div style="font-size:26px;font-weight:900;color:#60a5fa;line-height:1;">18%</div></div>
+            <div style="flex:1;"><div style="background:#1e2d3d;border-radius:3px;height:5px;"><div style="background:linear-gradient(90deg,#3b82f6,#60a5fa);width:18%;height:100%;border-radius:3px;"></div></div></div>
+            <div><div style="color:#4b5563;font-size:7px;margin-bottom:1px;">Confidence</div><div style="color:#eab308;font-size:9px;font-weight:600;">MEDIUM</div></div>
+            <div><div style="color:#4b5563;font-size:7px;margin-bottom:1px;">Revision</div><div style="color:#9ca3af;font-size:9px;">v7</div></div>
+          </div>
+        </div>
+
+        <!-- Body with sidebar chart -->
+        <div style="display:grid;grid-template-columns:1fr 140px;gap:8px;">
+          <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+            <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">Rationale</div>
+            <div style="color:#6b7280;font-size:7px;line-height:1.5;">Both parties lack sufficient incentive to accept ceasefire terms...</div>
+          </div>
+          <!-- Sidebar chart panel -->
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:6px;">Probability History</div>
+              <!-- Chart -->
+              <svg width="118" height="50" viewBox="0 0 118 50" style="display:block;overflow:visible;">
+                <!-- Grid lines -->
+                <line x1="0" y1="0" x2="118" y2="0" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="0" y1="25" x2="118" y2="25" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <line x1="0" y1="50" x2="118" y2="50" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="2,2"/>
+                <!-- Labels -->
+                <text x="0" y="-2" font-size="5" fill="#4b5563">40%</text>
+                <text x="0" y="23" font-size="5" fill="#4b5563">20%</text>
+                <text x="0" y="53" font-size="5" fill="#4b5563">0%</text>
+                <!-- Area fill -->
+                <path d="M0,40 L20,35 L40,15 L60,10 L80,20 L100,23 L118,27 L118,50 L0,50 Z" fill="url(#grad)" opacity="0.3"/>
+                <defs><linearGradient id="grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+                <!-- Line -->
+                <polyline points="0,40 20,35 40,15 60,10 80,20 100,23 118,27" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+                <!-- Current dot -->
+                <circle cx="118" cy="27" r="3" fill="#60a5fa"/>
+                <!-- Tick marks for revisions -->
+                <circle cx="0" cy="40" r="2" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.8"/>
+                <circle cx="20" cy="35" r="2" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.8"/>
+                <circle cx="40" cy="15" r="2" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.8"/>
+                <circle cx="60" cy="10" r="2" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.8"/>
+                <circle cx="80" cy="20" r="2" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.8"/>
+                <circle cx="100" cy="23" r="2" fill="#1e3a5f" stroke="#3b82f6" stroke-width="0.8"/>
+              </svg>
+              <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                <span style="color:#4b5563;font-size:6px;">Oct '25</span>
+                <span style="color:#60a5fa;font-size:6px;">18% now</span>
+              </div>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">Countries</div>
+              <div style="color:#9ca3af;font-size:8px;line-height:1.6;">🇷🇺 Russia<br/>🇺🇦 Ukraine</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Chart in sidebar</h3>
+      <p>A full probability-over-time line chart lives in the right sidebar, replacing (or sitting above) the text revision history. Each revision is a dot on the line. Clean separation between the analysis content (main column) and the track record (sidebar).</p>
+    </div>
+  </div>
+
+  <!-- Option C: Dedicated chart panel in main column -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#050a14;border-radius:8px;padding:12px;font-family:monospace;font-size:10px;color:#6b7280;min-height:280px;">
+
+        <div style="color:#4b5563;margin-bottom:8px;font-size:9px;">Forecasts / <span style="color:#60a5fa;">Russia-Ukraine ceasefire</span></div>
+
+        <!-- Hero -->
+        <div style="background:linear-gradient(135deg,#0d1f3c,#0a1628);border:1px solid rgba(96,165,250,0.25);border-radius:8px;padding:10px;margin-bottom:8px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+            <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);border-radius:4px;padding:1px 6px;color:#22c55e;font-size:8px;font-weight:600;">ACTIVE</div>
+            <span style="color:#60a5fa;font-size:8px;">Q2 2026</span>
+          </div>
+          <div style="color:#f1f5f9;font-size:11px;font-weight:700;margin-bottom:6px;">Russia-Ukraine ceasefire before Q3 2026</div>
+          <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,0.2);border-radius:5px;padding:6px;">
+            <div style="font-size:22px;font-weight:900;color:#60a5fa;line-height:1;">18%</div>
+            <div style="flex:1;"><div style="background:#1e2d3d;border-radius:2px;height:4px;"><div style="background:linear-gradient(90deg,#3b82f6,#60a5fa);width:18%;height:100%;border-radius:2px;"></div></div></div>
+            <span style="color:#eab308;font-size:8px;font-weight:600;">MEDIUM</span>
+            <span style="color:#9ca3af;font-size:8px;">v7</span>
+          </div>
+        </div>
+
+        <!-- Main column with chart panel -->
+        <div style="display:grid;grid-template-columns:1fr 130px;gap:8px;">
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <!-- Chart panel in main col -->
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:6px;">Probability over time · 7 revisions</div>
+              <svg width="100%" height="55" viewBox="0 0 200 55" style="display:block;">
+                <line x1="0" y1="0" x2="200" y2="0" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="3,3"/>
+                <line x1="0" y1="27" x2="200" y2="27" stroke="#1e3a5f" stroke-width="0.5" stroke-dasharray="3,3"/>
+                <line x1="0" y1="55" x2="200" y2="55" stroke="#1e3a5f" stroke-width="0.5"/>
+                <text x="2" y="-2" font-size="5" fill="#4b5563">40%</text>
+                <text x="2" y="25" font-size="5" fill="#4b5563">20%</text>
+                <text x="2" y="53" font-size="5" fill="#4b5563">0%</text>
+                <path d="M10,45 L43,42 L76,20 L110,14 L143,24 L176,27 L200,31 L200,55 L10,55 Z" fill="url(#grad2)" opacity="0.2"/>
+                <defs><linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></linearGradient></defs>
+                <polyline points="10,45 43,42 76,20 110,14 143,24 176,27 200,31" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
+                <circle cx="10" cy="45" r="2.5" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+                <circle cx="43" cy="42" r="2.5" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+                <circle cx="76" cy="20" r="2.5" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+                <circle cx="110" cy="14" r="2.5" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+                <circle cx="143" cy="24" r="2.5" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+                <circle cx="176" cy="27" r="2.5" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1"/>
+                <circle cx="200" cy="31" r="3.5" fill="#60a5fa"/>
+                <text x="9" y="53" font-size="5" fill="#4b5563">Oct</text>
+                <text x="190" y="53" font-size="5" fill="#4b5563">Mar</text>
+              </svg>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">Rationale</div>
+              <div style="color:#6b7280;font-size:7px;line-height:1.5;">Both parties lack sufficient incentive to accept ceasefire terms...</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">Countries</div>
+              <div style="color:#9ca3af;font-size:8px;line-height:1.6;">🇷🇺 Russia<br/>🇺🇦 Ukraine</div>
+            </div>
+            <div style="background:#0d1929;border:1px solid #1e3a5f;border-radius:5px;padding:8px;">
+              <div style="color:#4b6584;font-size:7px;text-transform:uppercase;margin-bottom:4px;">History</div>
+              <div style="color:#6b7280;font-size:7px;line-height:1.6;">v7 · 18% · Mar 30<br/>v6 · 20% · Mar 15<br/>v5 · 22% · Feb 28</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Chart in main column</h3>
+      <p>A wider chart panel sits at the top of the main content column, below the hero. More horizontal space for axis labels, hover tooltips, and date ticks. The text revision log stays in the sidebar as a companion. Best for seeing the full shape of the probability arc.</p>
+    </div>
+  </div>
+
+</div>

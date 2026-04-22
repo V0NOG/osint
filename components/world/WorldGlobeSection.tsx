@@ -3,14 +3,15 @@
 import { useState, useCallback } from 'react'
 import { WorldGlobePlaceholder } from '@/components/world/WorldGlobePlaceholder'
 import { CountryInfoPanel } from '@/components/world/CountryInfoPanel'
-import type { Country } from '@/lib/types'
+import type { Country, GeopoliticalEvent } from '@/lib/types'
 import type { GlobeCountryMarker } from '@/components/world/Globe'
 
 interface WorldGlobeSectionProps {
   countries: Country[]
+  events?: GeopoliticalEvent[]
 }
 
-export function WorldGlobeSection({ countries }: WorldGlobeSectionProps) {
+export function WorldGlobeSection({ countries, events = [] }: WorldGlobeSectionProps) {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
 
   const handleGlobeSelect = useCallback(
@@ -25,8 +26,8 @@ export function WorldGlobeSection({ countries }: WorldGlobeSectionProps) {
   )
 
   return (
-    <div className="relative bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl overflow-hidden">
-      <WorldGlobePlaceholder onSelect={handleGlobeSelect} />
+    <div className="relative h-full bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl overflow-hidden">
+      <WorldGlobePlaceholder countries={countries} events={events} onSelect={handleGlobeSelect} />
 
       {selectedCountry && (
         <CountryInfoPanel

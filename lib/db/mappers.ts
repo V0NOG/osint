@@ -119,6 +119,7 @@ export function mapEvent(
     countries: e.countries?.map((c) => c.id) ?? [],
     actors: e.actors?.map((a) => a.id) ?? [],
     relatedForecasts: e.relatedForecasts?.map((f) => f.id) ?? [],
+    createdAt: e.createdAt.toISOString(),
   }
 }
 

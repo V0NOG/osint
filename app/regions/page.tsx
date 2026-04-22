@@ -1,16 +1,20 @@
 import { Map, AlertTriangle, Activity, TrendingUp } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { RiskIndicator } from '@/components/ui/RiskIndicator'
-import { mockRegions } from '@/lib/mock-data/regions'
-import { mockCountries } from '@/lib/mock-data/countries'
+import { getRegions } from '@/lib/db/regions'
+import { getCountries } from '@/lib/db/countries'
 import Link from 'next/link'
+import type { Country } from '@/lib/types'
 
 export const metadata = {
   title: 'Regions',
 }
 
-export default function RegionsPage() {
-  const sortedRegions = [...mockRegions].sort((a, b) => b.overallRiskScore - a.overallRiskScore)
+export default async function RegionsPage() {
+  const [regions, countries] = await Promise.all([getRegions(), getCountries()])
+
+  const sortedRegions = [...regions].sort((a, b) => b.overallRiskScore - a.overallRiskScore)
+  const countryById: Record<string, Country> = Object.fromEntries(countries.map((c) => [c.id, c]))
 
   return (
     <div className="p-6 max-w-[1200px] mx-auto">
@@ -21,14 +25,14 @@ export default function RegionsPage() {
           <h1 className="text-xl font-bold text-[var(--color-text-primary)]">Regions</h1>
         </div>
         <p className="text-sm text-[var(--color-text-secondary)]">
-          Geopolitical risk overview across {mockRegions.length} global regions
+          Geopolitical risk overview across {regions.length} global regions
         </p>
       </div>
 
       {/* Regions list */}
       <div className="space-y-4">
         {sortedRegions.map((region) => {
-          const regionCountries = mockCountries.filter((c) => region.countries.includes(c.id))
+          const regionCountries = region.countries.map((id) => countryById[id]).filter((c): c is Country => !!c)
           return (
             <Link
               key={region.id}

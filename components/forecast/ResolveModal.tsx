@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { cn } from '@/lib/utils/cn'
 import type { Forecast } from '@/lib/types'
@@ -17,9 +18,10 @@ interface ResolveModalProps {
   isOpen: boolean
   onClose: () => void
   onResolve: (outcome: ResolveOutcome) => void
+  submitting?: boolean
 }
 
-export function ResolveModal({ forecast, isOpen, onClose, onResolve }: ResolveModalProps) {
+export function ResolveModal({ forecast, isOpen, onClose, onResolve, submitting = false }: ResolveModalProps) {
   const today = new Date().toISOString().slice(0, 10)
   const [result, setResult] = useState<'yes' | 'no' | null>(null)
   const [resolutionDate, setResolutionDate] = useState(today)
@@ -130,15 +132,16 @@ export function ResolveModal({ forecast, isOpen, onClose, onResolve }: ResolveMo
         </button>
         <button
           onClick={handleSubmit}
-          disabled={!canSubmit}
+          disabled={!canSubmit || submitting}
           className={cn(
-            'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
-            canSubmit
+            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+            canSubmit && !submitting
               ? 'bg-blue-600 hover:bg-blue-500 text-white'
               : 'bg-[var(--color-bg-elevated)] text-[var(--color-text-tertiary)] cursor-not-allowed border border-[var(--color-border)]'
           )}
         >
-          Confirm Resolution
+          {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          {submitting ? 'Saving…' : 'Confirm Resolution'}
         </button>
       </div>
     </Modal>

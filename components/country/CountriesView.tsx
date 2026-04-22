@@ -4,8 +4,7 @@ import { useState, useMemo } from 'react'
 import { Flag } from 'lucide-react'
 import { CountryCard } from './CountryCard'
 import { FilterChipBar, FilterDropdown } from '@/components/ui/FilterChipBar'
-import { mockCountries } from '@/lib/mock-data/countries'
-import type { RiskLevel } from '@/lib/types'
+import type { Country, RiskLevel } from '@/lib/types'
 
 const RISK_LEVELS: RiskLevel[] = ['critical', 'high', 'elevated', 'moderate', 'low', 'minimal']
 
@@ -48,7 +47,8 @@ const riskColors: Record<RiskLevel, string> = {
   minimal: 'text-gray-400',
 }
 
-export function CountriesView() {
+export function CountriesView({ initialData }: { initialData: Country[] }) {
+  const allCountries = initialData
   const [activeRisk, setActiveRisk] = useState<Set<string>>(new Set())
   const [region, setRegion] = useState('all')
   const [sort, setSort] = useState('risk-desc')
@@ -63,7 +63,7 @@ export function CountriesView() {
   }
 
   const filtered = useMemo(() => {
-    let result = [...mockCountries]
+    let result = [...allCountries]
 
     if (activeRisk.size > 0) {
       result = result.filter((c) => activeRisk.has(c.riskLevel))
@@ -97,8 +97,8 @@ export function CountriesView() {
             <h1 className="text-xl font-bold text-[var(--color-text-primary)]">Countries</h1>
           </div>
           <p className="text-sm text-[var(--color-text-secondary)]">
-            {mockCountries.length} countries tracked across{' '}
-            {new Set(mockCountries.map((c) => c.region)).size} regions
+            {allCountries.length} countries tracked across{' '}
+            {new Set(allCountries.map((c) => c.region)).size} regions
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function CountriesView() {
         activeValues={activeRisk}
         onToggle={toggleRisk}
         resultCount={filtered.length}
-        totalCount={mockCountries.length}
+        totalCount={allCountries.length}
         dropdowns={
           <>
             <FilterDropdown

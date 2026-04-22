@@ -2,14 +2,11 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, AlertTriangle, Activity, MapPin, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { WatchButton } from '@/components/ui/WatchButton'
 import { EventCard } from '@/components/event/EventCard'
 import { ForecastCard } from '@/components/forecast/ForecastCard'
 import { Panel } from '@/components/ui/Panel'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockEvents } from '@/lib/mock-data/events'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
-import { mockActors } from '@/lib/mock-data/actors'
-import { mockRegions } from '@/lib/mock-data/regions'
+import { getCountryBySlug } from '@/lib/db/countries'
 import { formatDate, formatNumber } from '@/lib/utils/format'
 import { getRiskColor, scoreToRiskLevel } from '@/lib/utils/risk'
 
@@ -17,12 +14,8 @@ interface PageProps {
   params: { slug: string }
 }
 
-export async function generateStaticParams() {
-  return mockCountries.map((c) => ({ slug: c.slug }))
-}
-
 export async function generateMetadata({ params }: PageProps) {
-  const country = mockCountries.find((c) => c.slug === params.slug)
+  const country = await getCountryBySlug(params.slug)
   return { title: country?.name ?? 'Country' }
 }
 
@@ -58,22 +51,11 @@ function RiskBreakdownBar({ label, score }: { label: string; score: number }) {
   )
 }
 
-export default function CountryDetailPage({ params }: PageProps) {
-  const country = mockCountries.find((c) => c.slug === params.slug)
+export default async function CountryDetailPage({ params }: PageProps) {
+  const country = await getCountryBySlug(params.slug)
   if (!country) notFound()
 
-  const relatedEvents = mockEvents
-    .filter((e) => e.countries.includes(country.id))
-    .slice(0, 4)
-
-  const relatedForecasts = mockForecasts
-    .filter((f) => f.countries.includes(country.id))
-    .slice(0, 3)
-
-  const keyActors = mockActors.filter((a) => country.keyActors.includes(a.id))
-
-  const regionData = mockRegions.find((r) => r.id === country.region)
-
+  const { actors: keyActors, events: relatedEvents, forecasts: relatedForecasts, regionData } = country
   const riskColor = getRiskColor(country.riskLevel)
 
   return (
@@ -87,7 +69,7 @@ export default function CountryDetailPage({ params }: PageProps) {
         All Countries
       </Link>
 
-      {/* Hero — includes name, score, summary, and risk category bars */}
+      {/* Hero */}
       <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6 mb-5 relative overflow-hidden">
         {/* Background accent */}
         <div
@@ -97,6 +79,7 @@ export default function CountryDetailPage({ params }: PageProps) {
 
         {/* Name row */}
         <div className="relative flex items-start justify-between gap-6 mb-4">
+          <WatchButton type="country" id={country.id} />
           <div className="flex items-start gap-4">
             <div className="w-14 h-10 rounded-md bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center flex-shrink-0">
               <span className="text-sm font-bold text-[var(--color-text-secondary)] font-mono">
@@ -149,7 +132,7 @@ export default function CountryDetailPage({ params }: PageProps) {
           {country.summary}
         </p>
 
-        {/* Risk category bars — inside the hero */}
+        {/* Risk category bars */}
         <div className="relative border-t border-[var(--color-border)] pt-4 space-y-2.5">
           {Object.entries(country.riskCategories).map(([key, score]) => (
             <RiskBreakdownBar
@@ -169,7 +152,7 @@ export default function CountryDetailPage({ params }: PageProps) {
 
       {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-5">
-        {/* Left column: events + key actors */}
+        {/* Left column */}
         <div className="space-y-5">
           {/* Recent events */}
           <section>
@@ -205,9 +188,13 @@ export default function CountryDetailPage({ params }: PageProps) {
             <div className="divide-y divide-[var(--color-border)]">
               {keyActors.length > 0 ? (
                 keyActors.map((actor) => (
-                  <div key={actor.id} className="px-5 py-3.5">
+                  <Link
+                    key={actor.id}
+                    href={`/actors/${actor.id}`}
+                    className="block px-5 py-3.5 hover:bg-[var(--color-bg-elevated)] transition-colors duration-150 group"
+                  >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <span className="text-xs font-semibold text-[var(--color-text-primary)]">
+                      <span className="text-xs font-semibold text-[var(--color-text-primary)] group-hover:text-white transition-colors">
                         {actor.name}
                       </span>
                       <Badge
@@ -229,7 +216,7 @@ export default function CountryDetailPage({ params }: PageProps) {
                     <p className="text-[11px] text-[var(--color-text-tertiary)] leading-relaxed line-clamp-2">
                       {actor.description}
                     </p>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className="px-5 py-4 text-xs text-[var(--color-text-tertiary)]">
@@ -240,7 +227,7 @@ export default function CountryDetailPage({ params }: PageProps) {
           </Panel>
         </div>
 
-        {/* Right column: active forecasts + quick stats */}
+        {/* Right column */}
         <div className="space-y-4">
           {/* Active forecasts */}
           <section>
@@ -274,10 +261,10 @@ export default function CountryDetailPage({ params }: PageProps) {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-[var(--color-text-tertiary)]">Region</span>
                 <Link
-                  href={`/regions/${regionData?.slug ?? country.region}`}
+                  href={`/regions/${regionData.slug}`}
                   className="text-xs font-medium text-[var(--color-accent-blue)] hover:text-blue-300 transition-colors"
                 >
-                  {regionData?.name ?? country.region}
+                  {regionData.name}
                 </Link>
               </div>
               <div className="flex items-center justify-between">

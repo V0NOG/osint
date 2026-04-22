@@ -3,10 +3,10 @@
 import { useState, useMemo } from 'react'
 import { Target, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { ForecastCard } from './ForecastCard'
 import { FilterChipBar, FilterDropdown } from '@/components/ui/FilterChipBar'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
-import type { ForecastStatus, ConfidenceLevel } from '@/lib/types'
+import type { Forecast, ForecastStatus, ConfidenceLevel } from '@/lib/types'
 
 const STATUSES: ForecastStatus[] = ['active', 'resolved', 'expired', 'draft']
 const CONFIDENCE_LEVELS: ConfidenceLevel[] = ['high', 'medium', 'low']
@@ -41,7 +41,11 @@ const SORT_OPTIONS = [
   { value: 'updated-desc', label: 'Last Updated' },
 ]
 
-export function ForecastsView() {
+export function ForecastsView({ initialData }: { initialData: Forecast[] }) {
+  const allForecasts = initialData
+  const { data: session } = useSession()
+  const role = (session?.user as { role?: string } | undefined)?.role
+  const canCreateForecast = role === 'analyst' || role === 'admin'
   const [activeChips, setActiveChips] = useState<Set<string>>(new Set(['status:active']))
   const [sort, setSort] = useState('prob-desc')
 
@@ -64,7 +68,7 @@ export function ForecastsView() {
   )
 
   const filtered = useMemo(() => {
-    let result = [...mockForecasts]
+    let result = [...allForecasts]
 
     if (activeStatuses.size > 0) {
       result = result.filter((f) => activeStatuses.has(f.status))
@@ -86,11 +90,11 @@ export function ForecastsView() {
     return result
   }, [activeStatuses, activeConfs, sort])
 
-  const activeCount = mockForecasts.filter((f) => f.status === 'active').length
+  const activeCount = allForecasts.filter((f) => f.status === 'active').length
   const avgProb = Math.round(
-    mockForecasts.reduce((sum, f) => sum + f.probability, 0) / mockForecasts.length
+    allForecasts.reduce((sum, f) => sum + f.probability, 0) / allForecasts.length
   )
-  const lowConfCount = mockForecasts.filter((f) => f.confidenceLevel === 'low').length
+  const lowConfCount = allForecasts.filter((f) => f.confidenceLevel === 'low').length
 
   return (
     <div className="p-6 max-w-[1200px] mx-auto">
@@ -102,16 +106,18 @@ export function ForecastsView() {
             <h1 className="text-xl font-bold text-[var(--color-text-primary)]">Forecasts</h1>
           </div>
           <p className="text-sm text-[var(--color-text-secondary)]">
-            {mockForecasts.length} structured forecasts — {activeCount} active
+            {allForecasts.length} structured forecasts — {activeCount} active
           </p>
         </div>
-        <Link
-          href="/forecasts/new"
-          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm text-white font-medium transition-colors flex-shrink-0"
-        >
-          <Plus className="w-4 h-4" strokeWidth={2} />
-          New Forecast
-        </Link>
+        {canCreateForecast && (
+          <Link
+            href="/forecasts/new"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm text-white font-medium transition-colors flex-shrink-0"
+          >
+            <Plus className="w-4 h-4" strokeWidth={2} />
+            New Forecast
+          </Link>
+        )}
       </div>
 
       {/* Summary stats */}
@@ -130,7 +136,7 @@ export function ForecastsView() {
         </div>
         <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg p-4">
           <div className="text-2xl font-bold font-mono tabular-nums text-[var(--color-text-primary)] mb-0.5">
-            {mockForecasts.reduce((sum, f) => sum + f.versionNumber, 0)}
+            {allForecasts.reduce((sum, f) => sum + f.versionNumber, 0)}
           </div>
           <div className="text-xs text-[var(--color-text-tertiary)] uppercase tracking-wider font-medium">Total Revisions</div>
         </div>
@@ -142,7 +148,7 @@ export function ForecastsView() {
         activeValues={activeChips}
         onToggle={toggleChip}
         resultCount={filtered.length}
-        totalCount={mockForecasts.length}
+        totalCount={allForecasts.length}
         dropdowns={
           <FilterDropdown
             label="Sort"

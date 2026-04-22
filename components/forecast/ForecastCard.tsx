@@ -4,7 +4,40 @@ import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils/cn'
 import { getProbabilityColor } from '@/lib/utils/risk'
 import { formatDate } from '@/lib/utils/format'
-import type { Forecast } from '@/lib/types'
+import type { Forecast, ForecastHistoryEntry } from '@/lib/types'
+
+function ProbSparkline({ history, current }: { history: ForecastHistoryEntry[]; current: number }) {
+  const points = [...history.map((h) => h.probability), current]
+  if (points.length < 2) return null
+
+  const W = 56
+  const H = 20
+  const min = Math.min(...points) - 5
+  const max = Math.max(...points) + 5
+  const range = max - min || 1
+
+  const coords = points.map((p, i) => {
+    const x = (i / (points.length - 1)) * W
+    const y = H - ((p - min) / range) * H
+    return `${x},${y}`
+  })
+  const d = `M ${coords.join(' L ')}`
+
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="opacity-60">
+      <polyline
+        points={coords.join(' ')}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-blue-400"
+      />
+      <circle cx={coords[coords.length - 1].split(',')[0]} cy={coords[coords.length - 1].split(',')[1]} r="2" fill="currentColor" className="text-blue-400" />
+    </svg>
+  )
+}
 
 interface ForecastCardProps {
   forecast: Forecast
@@ -113,10 +146,15 @@ export function ForecastCard({ forecast, className, variant = 'full' }: Forecast
               {forecast.confidenceLevel}
             </span>
           </div>
-          <div className="ml-auto flex items-center gap-1.5 text-[var(--color-text-tertiary)]">
-            <span className="text-[10px]">v{forecast.versionNumber}</span>
-            <span className="text-[10px] opacity-60">·</span>
-            <span className="text-[10px]">{forecast.timeHorizon}</span>
+          <div className="ml-auto flex items-center gap-2 text-[var(--color-text-tertiary)]">
+            {forecast.history.length >= 1 && (
+              <ProbSparkline history={forecast.history} current={forecast.probability} />
+            )}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px]">v{forecast.versionNumber}</span>
+              <span className="text-[10px] opacity-60">·</span>
+              <span className="text-[10px]">{forecast.timeHorizon}</span>
+            </div>
           </div>
         </div>
       </div>

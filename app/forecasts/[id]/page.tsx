@@ -1,35 +1,29 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
-import { mockEvents } from '@/lib/mock-data/events'
-import { mockCountries } from '@/lib/mock-data/countries'
+import { getForecastById } from '@/lib/db/forecasts'
+import { getCountriesByIds } from '@/lib/db/countries'
+import { getEventById } from '@/lib/db/events'
 import { ForecastDetailView } from '@/components/forecast/ForecastDetailView'
-import type { Country } from '@/lib/types'
 
 interface PageProps {
   params: { id: string }
 }
 
-export async function generateStaticParams() {
-  return mockForecasts.map((f) => ({ id: f.id }))
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const forecast = mockForecasts.find((f) => f.id === params.id)
+  const forecast = await getForecastById(params.id)
   return { title: forecast?.title ?? 'Forecast' }
 }
 
-export default function ForecastDetailPage({ params }: PageProps) {
-  const forecast = mockForecasts.find((f) => f.id === params.id)
+export default async function ForecastDetailPage({ params }: PageProps) {
+  const forecast = await getForecastById(params.id)
   if (!forecast) notFound()
 
-  const countries = forecast.countries
-    .map((id) => mockCountries.find((c) => c.id === id))
-    .filter((c): c is Country => c !== undefined)
-
-  const relatedEvents = mockEvents
-    .filter((e) => forecast.relatedEvents?.includes(e.id))
-    .slice(0, 3)
+  const [countries, relatedEvents] = await Promise.all([
+    getCountriesByIds(forecast.countries),
+    Promise.all(
+      (forecast.relatedEvents ?? []).slice(0, 3).map((id) => getEventById(id))
+    ).then((results) => results.filter((e) => e !== null)),
+  ])
 
   return <ForecastDetailView forecast={forecast} countries={countries} relatedEvents={relatedEvents} />
 }

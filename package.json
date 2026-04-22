@@ -13,6 +13,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
     "@auth/prisma-adapter": "^2.11.1",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
@@ -31,6 +32,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^3.8.1",
+    "rss-parser": "^3.13.0",
     "tailwind-merge": "^2.3.0",
     "three": "^0.183.2",
     "topojson-client": "^3.1.0",

@@ -3,25 +3,32 @@ import { WorldGlobeSection } from '@/components/world/WorldGlobeSection'
 import { EventCard } from '@/components/event/EventCard'
 import { ForecastCard } from '@/components/forecast/ForecastCard'
 import { StatBlock } from '@/components/ui/StatBlock'
-import { Panel } from '@/components/ui/Panel'
 import { Badge } from '@/components/ui/Badge'
 import { RiskIndicator } from '@/components/ui/RiskIndicator'
-import { mockEvents } from '@/lib/mock-data/events'
-import { mockForecasts } from '@/lib/mock-data/forecasts'
-import { mockCountries } from '@/lib/mock-data/countries'
-import { mockRegions } from '@/lib/mock-data/regions'
+import { getCountries } from '@/lib/db/countries'
+import { getRecentEvents } from '@/lib/db/events'
+import { getForecasts } from '@/lib/db/forecasts'
+import { getRegions } from '@/lib/db/regions'
 import Link from 'next/link'
 
 export const metadata = {
   title: 'World Overview',
 }
 
-export default function WorldPage() {
-  const criticalEvents = mockEvents.filter((e) => e.severity === 'critical').slice(0, 3)
-  const topAlerts = mockEvents.slice(0, 4)
-  const activeForecasts = mockForecasts.filter((f) => f.status === 'active').slice(0, 4)
-  const criticalCountries = mockCountries.filter((c) => c.riskLevel === 'critical')
-  const totalAlerts = mockCountries.reduce((sum, c) => sum + c.alertCount, 0)
+export default async function WorldPage() {
+  const [countries, events, forecasts, regions] = await Promise.all([
+    getCountries(),
+    getRecentEvents(50),
+    getForecasts({ status: 'active' }),
+    getRegions(),
+  ])
+
+  const countryMap = Object.fromEntries(countries.map((c) => [c.id, c.name]))
+  const criticalEvents = events.filter((e) => e.severity === 'critical').slice(0, 3)
+  const topAlerts = events.slice(0, 4)
+  const activeForecasts = forecasts.slice(0, 4)
+  const criticalCountries = countries.filter((c) => c.riskLevel === 'critical')
+  const totalAlerts = countries.reduce((sum, c) => sum + c.alertCount, 0)
 
   return (
     <div className="flex flex-col h-full">
@@ -30,7 +37,7 @@ export default function WorldPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <StatBlock
             label="Active Events"
-            value={mockEvents.length}
+            value={events.length}
             subtext="Global incidents tracked"
             icon={Zap}
             trend="up"
@@ -46,7 +53,7 @@ export default function WorldPage() {
           />
           <StatBlock
             label="Active Forecasts"
-            value={mockForecasts.filter((f) => f.status === 'active').length}
+            value={forecasts.length}
             subtext="Open forecast questions"
             icon={Activity}
           />
@@ -93,7 +100,7 @@ export default function WorldPage() {
 
             {/* Globe */}
             <div className="flex-1 min-h-0">
-              <WorldGlobeSection countries={mockCountries} />
+              <WorldGlobeSection countries={countries} events={events} />
             </div>
           </div>
 
@@ -103,7 +110,7 @@ export default function WorldPage() {
               Regional Risk Summary
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-              {mockRegions.map((region) => (
+              {regions.map((region) => (
                 <Link
                   key={region.id}
                   href={`/regions`}
@@ -168,7 +175,7 @@ export default function WorldPage() {
 
           <div className="p-3 space-y-2">
             {topAlerts.map((event) => (
-              <EventCard key={event.id} event={event} variant="compact" />
+              <EventCard key={event.id} event={event} variant="compact" countryMap={countryMap} />
             ))}
           </div>
 
@@ -178,7 +185,7 @@ export default function WorldPage() {
               Critical Risk Countries
             </h4>
             <div className="space-y-2">
-              {criticalCountries.map((country) => (
+              {criticalCountries.slice(0, 8).map((country) => (
                 <Link
                   key={country.id}
                   href={`/countries/${country.slug}`}
@@ -211,10 +218,10 @@ export default function WorldPage() {
             </h4>
             <div className="space-y-2">
               {[
-                { label: 'Countries tracked', value: mockCountries.length },
-                { label: 'Regions monitored', value: mockRegions.length },
-                { label: 'Events catalogued', value: mockEvents.length },
-                { label: 'Open forecasts', value: mockForecasts.filter(f => f.status === 'active').length },
+                { label: 'Countries tracked', value: countries.length },
+                { label: 'Regions monitored', value: regions.length },
+                { label: 'Events catalogued', value: events.length },
+                { label: 'Open forecasts', value: forecasts.length },
               ].map((stat) => (
                 <div key={stat.label} className="flex items-center justify-between">
                   <span className="text-xs text-[var(--color-text-tertiary)]">{stat.label}</span>
