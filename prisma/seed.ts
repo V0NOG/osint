@@ -8,6 +8,28 @@ import { mockActors } from '../lib/mock-data/actors'
 import { mockEvents } from '../lib/mock-data/events'
 import { mockForecasts } from '../lib/mock-data/forecasts'
 import { COUNTRIES_SEED } from '../lib/data/world-countries'
+import { existsSync } from 'fs'
+
+// Generated profiles/actors are optional — only loaded if the generation
+// script has been run. Seed still works without them.
+const generatedProfiles: Array<{
+  iso2: string
+  summary: string
+  riskCategories: { political: number; military: number; economic: number; social: number; environmental: number }
+  keyTensions: string[]
+}> = existsSync(require.resolve('../lib/data/generated-profiles'))
+  ? (require('../lib/data/generated-profiles') as { GENERATED_PROFILES: typeof generatedProfiles }).GENERATED_PROFILES
+  : []
+
+const generatedActors: Array<{
+  id: string; name: string; type: string; role: string
+  riskContribution: string; description: string
+  affiliations: string[]; countrySlug: string
+}> = existsSync(require.resolve('../lib/mock-data/generated-actors'))
+  ? (require('../lib/mock-data/generated-actors') as { GENERATED_ACTORS: typeof generatedActors }).GENERATED_ACTORS
+  : []
+
+const profileByIso2 = new Map(generatedProfiles.map((p) => [p.iso2, p]))
 
 const ACTOR_TYPE_TO_PRISMA: Record<string, string> = {
   state: 'state',
@@ -148,12 +170,18 @@ async function main() {
     })
   }
 
-  // ── World countries (all UN-recognized) ──────────────────────────────────
-  console.log('Seeding world countries...')
+  // ── World countries (all UN-recognized) ──────────────────────────��───────
+  console.log(`Seeding world countries (${generatedProfiles.length} with generated profiles)...`)
   for (const wc of COUNTRIES_SEED) {
+    const gen = profileByIso2.get(wc.iso2)
     await prisma.country.upsert({
       where: { iso2: wc.iso2 },
-      update: {},
+      update: gen
+        ? {
+            summary: gen.summary,
+            riskCategories: gen.riskCategories as import('@prisma/client').Prisma.InputJsonValue,
+          }
+        : {},
       create: {
         id: wc.slug,
         slug: wc.slug,
@@ -164,8 +192,8 @@ async function main() {
         regionId: wc.region,
         overallRiskScore: wc.riskScore,
         riskLevel: wc.riskLevel,
-        riskCategories: {} as import('@prisma/client').Prisma.InputJsonValue,
-        summary: wc.description ?? '',
+        riskCategories: (gen?.riskCategories ?? {}) as import('@prisma/client').Prisma.InputJsonValue,
+        summary: gen?.summary ?? wc.description ?? '',
         lastUpdated: new Date(),
         alertCount: 0,
         activeForecastCount: 0,
@@ -195,6 +223,27 @@ async function main() {
         affiliations: a.affiliations ?? [],
       },
     })
+  }
+
+  // ── Generated actors ──────────────────────────────────────────────────────
+  if (generatedActors.length > 0) {
+    console.log(`Seeding ${generatedActors.length} generated actors...`)
+    for (const a of generatedActors) {
+      await prisma.actor.upsert({
+        where: { id: a.id },
+        update: {},
+        create: {
+          id: a.id,
+          name: a.name,
+          type: (ACTOR_TYPE_TO_PRISMA[a.type] ?? a.type) as 'state' | 'non_state' | 'international_org' | 'individual',
+          role: a.role,
+          riskContribution: a.riskContribution as 'high' | 'medium' | 'low',
+          description: a.description,
+          affiliations: a.affiliations ?? [],
+          countries: { connect: [{ slug: a.countrySlug }] },
+        },
+      })
+    }
   }
 
   // ── Country → Actor connections ───────────────────────────────────────────

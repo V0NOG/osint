@@ -10,3 +10,7 @@ coverage
 *.tsbuildinfo
 
 /lib/generated/prisma
+
+# Claude Code tool packages (dropped in project root by tooling, not project source)
+/get-shit-done/
+/ui-ux-pro-max-skill/

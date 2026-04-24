@@ -26,12 +26,13 @@ const SEVERITY_CLASS: Record<string, string> = {
 }
 
 export function WatchlistView() {
-  const { watchlist, totalCount } = useWatchlist()
+  const { watchlist, totalCount, hydrated } = useWatchlist()
   const [data, setData] = useState<WatchlistData>({ countries: [], events: [], forecasts: [] })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!hydrated) return
     if (totalCount === 0) {
       setData({ countries: [], events: [], forecasts: [] })
       return
@@ -53,9 +54,9 @@ export function WatchlistView() {
       .then((d: WatchlistData) => setData(d))
       .catch(() => setError('Failed to load watchlist data'))
       .finally(() => setLoading(false))
-  }, [watchlist, totalCount])
+  }, [watchlist, totalCount, hydrated])
 
-  const isEmpty = totalCount === 0
+  const isEmpty = hydrated && totalCount === 0
 
   return (
     <div className="p-6 max-w-[1000px] mx-auto">
@@ -74,16 +75,25 @@ export function WatchlistView() {
         </div>
       </div>
 
+      {/* Pre-hydration skeleton */}
+      {!hydrated && (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border)] animate-pulse" />
+          ))}
+        </div>
+      )}
+
       {/* Error */}
-      {error && (
+      {hydrated && error && (
         <div className="flex items-center gap-2 p-4 rounded-xl bg-red-500/5 border border-red-500/20 mb-5">
           <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
           <p className="text-xs text-red-400">{error}</p>
         </div>
       )}
 
-      {/* Empty state */}
-      {isEmpty && (
+      {/* Empty state — only shown after hydration */}
+      {isEmpty && !loading && (
         <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-12 text-center">
           <div className="w-14 h-14 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border)] flex items-center justify-center mx-auto mb-4">
             <Star className="w-7 h-7 text-[var(--color-text-tertiary)]" strokeWidth={1.25} />
@@ -114,14 +124,14 @@ export function WatchlistView() {
       )}
 
       {/* Loading */}
-      {loading && (
+      {hydrated && loading && (
         <div className="flex items-center justify-center h-40">
           <Loader2 className="w-5 h-5 text-[var(--color-text-tertiary)] animate-spin" strokeWidth={1.5} />
         </div>
       )}
 
       {/* Content */}
-      {!loading && !isEmpty && (
+      {hydrated && !loading && !isEmpty && (
         <div className="space-y-6">
           {/* Countries */}
           {data.countries.length > 0 && (

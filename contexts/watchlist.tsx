@@ -23,6 +23,7 @@ interface WatchlistContextValue {
   unwatch: (type: WatchlistEntityType, id: string) => void
   isWatched: (type: WatchlistEntityType, id: string) => boolean
   totalCount: number
+  hydrated: boolean
 }
 
 const STORAGE_KEY = 'geopol:watchlist'
@@ -49,10 +50,12 @@ const WatchlistContext = createContext<WatchlistContextValue | null>(null)
 
 export function WatchlistProvider({ children }: { children: ReactNode }) {
   const [watchlist, setWatchlist] = useState<WatchlistState>(DEFAULT_STATE)
+  const [hydrated, setHydrated] = useState(false)
 
   // Load from localStorage after mount (avoids SSR/hydration mismatch)
   useEffect(() => {
     setWatchlist(loadFromStorage())
+    setHydrated(true)
   }, [])
 
   // Persist on every change (skip initial default-state write)
@@ -92,7 +95,7 @@ export function WatchlistProvider({ children }: { children: ReactNode }) {
     watchlist.countries.length + watchlist.events.length + watchlist.forecasts.length
 
   return (
-    <WatchlistContext.Provider value={{ watchlist, watch, unwatch, isWatched, totalCount }}>
+    <WatchlistContext.Provider value={{ watchlist, watch, unwatch, isWatched, totalCount, hydrated }}>
       {children}
     </WatchlistContext.Provider>
   )

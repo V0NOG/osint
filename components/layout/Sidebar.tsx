@@ -15,6 +15,8 @@ import {
   Database,
   Users,
   Rss,
+  Shield,
+  TrendingDown,
   ChevronRight,
   ChevronLeft,
   type LucideIcon,
@@ -39,10 +41,14 @@ const primaryNav: NavItem[] = [
   { label: 'Watchlist', href: '/watchlist', icon: Star },
 ]
 
+const domainsNav: NavItem[] = [
+  { label: 'Cyber', href: '/cyber', icon: Shield },
+  { label: 'Trade Wars', href: '/trade', icon: TrendingDown },
+]
+
 const adminNav: NavItem[] = [
   { label: 'Sources', href: '/sources', icon: Rss },
   { label: 'Ingestion', href: '/admin', icon: Database },
-  { label: 'Settings', href: '/settings', icon: Settings },
 ]
 
 const ROLE_BADGE: Record<string, { label: string; className: string }> = {
@@ -186,6 +192,25 @@ export function Sidebar() {
           ))}
         </nav>
 
+        {/* Domains nav */}
+        <div className={cn('border-t border-[var(--color-border)] py-3 space-y-0.5', collapsed ? 'px-1' : 'px-2')}>
+          {!collapsed && (
+            <div className="px-2 pb-2">
+              <span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] uppercase tracking-widest">
+                Domains
+              </span>
+            </div>
+          )}
+          {domainsNav.map((item) => (
+            <NavLink
+              key={item.href}
+              item={item}
+              isActive={isActive(item.href)}
+              collapsed={collapsed}
+            />
+          ))}
+        </div>
+
         {/* Admin nav — shown only to admin role */}
         {role === 'admin' && (
           <div className={cn('border-t border-[var(--color-border)] py-3 space-y-0.5', collapsed ? 'px-1' : 'px-2')}>
@@ -206,6 +231,15 @@ export function Sidebar() {
             ))}
           </div>
         )}
+
+        {/* Settings — visible to all users */}
+        <div className={cn('border-t border-[var(--color-border)] py-2 space-y-0.5', collapsed ? 'px-1' : 'px-2')}>
+          <NavLink
+            item={{ label: 'Settings', href: '/settings', icon: Settings }}
+            isActive={isActive('/settings')}
+            collapsed={collapsed}
+          />
+        </div>
 
         {/* Collapse toggle + role badge */}
         <div className={cn('border-t border-[var(--color-border)] py-3', collapsed ? 'flex justify-center' : 'px-4 flex items-center justify-between')}>

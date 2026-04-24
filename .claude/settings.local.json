@@ -51,7 +51,8 @@
       "Bash(awk -F: '{print $1}')",
       "Bash(openssl rand:*)",
       "Bash(xargs kill *)",
-      "Bash(wait)"
+      "Bash(wait)",
+      "Bash(npx ts-node *)"
     ]
   }
 }

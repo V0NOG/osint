@@ -99,5 +99,14 @@ export async function createEvent(data: CreateEventInput): Promise<GeopoliticalE
     },
     include: { sources: true, countries: true, actors: true, relatedForecasts: true },
   })
+
+  // Increment alertCount for every country mentioned in this event
+  if (data.countryIds.length > 0) {
+    await prisma.country.updateMany({
+      where: { id: { in: data.countryIds } },
+      data: { alertCount: { increment: 1 } },
+    })
+  }
+
   return mapEvent(event)
 }

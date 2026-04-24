@@ -8,6 +8,9 @@ import { ForecastCard } from '@/components/forecast/ForecastCard'
 import { getEventById } from '@/lib/db/events'
 import { getForecastById } from '@/lib/db/forecasts'
 import { formatDate } from '@/lib/utils/format'
+import { SOURCE_NAME_BIAS_MAP } from '@/lib/ingestion/adapters/sources'
+import type { SourceBias } from '@/lib/ingestion/adapters/sources'
+import { cn } from '@/lib/utils/cn'
 
 interface PageProps {
   params: { id: string }
@@ -31,6 +34,22 @@ const reliabilityLabels: Record<string, string> = {
   high: 'High Reliability',
   medium: 'Medium Reliability',
   low: 'Low Reliability / Unverified',
+}
+
+const BIAS_LABEL: Record<SourceBias, string> = {
+  'left':         'Left',
+  'center-left':  'Center-Left',
+  'center':       'Center',
+  'center-right': 'Center-Right',
+  'right':        'Right',
+}
+
+const BIAS_CLASS: Record<SourceBias, string> = {
+  'left':         'bg-blue-500/15 text-blue-400 border-blue-500/25',
+  'center-left':  'bg-sky-500/15 text-sky-400 border-sky-500/25',
+  'center':       'bg-white/8 text-[var(--color-text-tertiary)] border-white/10',
+  'center-right': 'bg-orange-500/15 text-orange-400 border-orange-500/25',
+  'right':        'bg-red-500/15 text-red-400 border-red-500/25',
 }
 
 export default async function EventDetailPage({ params }: PageProps) {
@@ -129,13 +148,26 @@ export default async function EventDetailPage({ params }: PageProps) {
           {/* Sources */}
           <Panel title="Sources" subtitle={`${event.sources.length} cited sources`}>
             <div className="divide-y divide-[var(--color-border)]">
-              {event.sources.map((source, i) => (
+              {event.sources.map((source, i) => {
+                const bias = SOURCE_NAME_BIAS_MAP[source.title]
+                return (
                 <div key={i} className="px-5 py-3.5 flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start gap-2 mb-1">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
                       <Badge variant={`reliability-${source.reliability}`} size="sm">
                         {reliabilityLabels[source.reliability]}
                       </Badge>
+                      {bias && (
+                        <span
+                          className={cn(
+                            'text-[9px] font-bold px-1.5 py-0.5 rounded border tracking-wider uppercase',
+                            BIAS_CLASS[bias]
+                          )}
+                          title={`Editorial lean: ${BIAS_LABEL[bias]}`}
+                        >
+                          {BIAS_LABEL[bias]}
+                        </span>
+                      )}
                     </div>
                     <p className="text-xs font-medium text-[var(--color-text-primary)] leading-snug">
                       {source.title}
@@ -156,7 +188,8 @@ export default async function EventDetailPage({ params }: PageProps) {
                     <ExternalLink className="w-3.5 h-3.5" strokeWidth={1.5} />
                   </a>
                 </div>
-              ))}
+                )
+              })}
             </div>
           </Panel>
 

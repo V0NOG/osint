@@ -12,30 +12,73 @@ export interface FeedConfig {
 
 // Lookup by source key — used at display time without needing a DB field
 export const SOURCE_BIAS_MAP: Record<string, SourceBias | undefined> = {
-  'reuters-world':    'center',
-  'bbc-world':        'center-left',
-  'aljazeera':        'center-left',
-  'ap-world':         'center',
-  'foreign-policy':   'center',
-  'defense-one':      'center',
-  'war-on-the-rocks': 'center',
-  'the-diplomat':     'center',
-  'bellingcat':       'center-left',
-  'middle-east-eye':  'center-left',
-  'arab-news':        'center-right',
-  'africa-report':    'center',
-  'allafrica':        'center',
-  'euractiv':         'center',
-  'moscow-times':     'center-left',
-  'rferl':            'center',
-  'kyiv-independent': 'center-left',
-  'scmp-asia':        'center',
-  'nikkei-asia':      'center',
-  'asia-times':       'center',
-  'insight-crime':    'center',
-  'mercopress':       'center',
-  'dawn-pakistan':    'center',
-  'the-wire-india':   'center-left',
+  // Wire services
+  'reuters-world':      'center',
+  'ap-world':           'center',
+  // Anglophone global
+  'bbc-world':          'center-left',
+  'aljazeera':          'center-left',
+  'foreign-policy':     'center',
+  'defense-one':        'center',
+  'war-on-the-rocks':   'center',
+  'the-diplomat':       'center',
+  'bellingcat':         'center-left',
+  // MENA
+  'middle-east-eye':    'center-left',
+  'arab-news':          'center-right',
+  'al-monitor':         'center',
+  'the-new-arab':       'center-left',
+  'iran-international': 'center-right',
+  'egypt-independent':  'center-left',
+  // Africa
+  'africa-report':      'center',
+  'allafrica':          'center',
+  'premium-times':      'center',
+  'daily-nation':       'center',
+  'east-african':       'center',
+  'mail-guardian':      'center-left',
+  'business-day-ng':    'center',
+  // Europe & Russia
+  'euractiv':           'center',
+  'moscow-times':       'center-left',
+  'meduza':             'center-left',
+  'rferl':              'center',
+  'kyiv-independent':   'center-left',
+  'balkan-insight':     'center',
+  'occrp':              'center-left',
+  'politico-eu':        'center',
+  // Asia-Pacific
+  'scmp-asia':          'center',
+  'nikkei-asia':        'center',
+  'asia-times':         'center',
+  'bangkok-post':       'center',
+  'irrawaddy':          'center-left',
+  'benar-news':         'center',
+  'rappler':            'center-left',
+  'jakarta-post':       'center',
+  // South & Central Asia
+  'dawn-pakistan':      'center',
+  'the-wire-india':     'center-left',
+  'the-print':          'center',
+  'eurasianet':         'center',
+  'cabar-asia':         'center',
+  // Latin America
+  'insight-crime':      'center',
+  'mercopress':         'center',
+  'americas-quarterly': 'center',
+  'agencia-brasil':     'center',
+  'rio-times':          'center',
+  // Multilateral / state broadcasters
+  'france24':           'center',
+  'dw-news':            'center',
+  'voa-news':           'center',
+  'nhk-world':          'center',
+  'rfi-english':        'center',
+  // Trade
+  'wto':                'center',
+  'imf':                'center',
+  'ft-world':           'center',
+  'wsj-world':          'center-right',
 }
 
 export const RSS_FEEDS: FeedConfig[] = [
@@ -378,15 +421,247 @@ export const TRADE_FEEDS: FeedConfig[] = [
   },
 ]
 
+// ─── Expanded MENA feeds ──────────────────────────────────────────────────────
+
+export const MENA_FEEDS: FeedConfig[] = [
+  {
+    name: 'Al-Monitor',
+    url: 'https://www.al-monitor.com/rss',
+    key: 'al-monitor',
+    reliability: 'high',
+    tags: ['middle-east', 'analysis', 'diplomacy'],
+  },
+  {
+    name: 'The New Arab',
+    url: 'https://english.alaraby.co.uk/rss.xml',
+    key: 'the-new-arab',
+    reliability: 'medium',
+    tags: ['middle-east', 'arab', 'conflict'],
+  },
+  {
+    name: 'Iran International',
+    url: 'https://www.iranintl.com/en/rss',
+    key: 'iran-international',
+    reliability: 'high',
+    tags: ['iran', 'middle-east'],
+  },
+  {
+    name: 'Egypt Independent',
+    url: 'https://egyptindependent.com/feed/',
+    key: 'egypt-independent',
+    reliability: 'medium',
+    tags: ['egypt', 'middle-east', 'north-africa'],
+  },
+]
+
+// ─── Expanded Africa feeds ────────────────────────────────────────────────────
+
+export const AFRICA_FEEDS: FeedConfig[] = [
+  {
+    name: 'Premium Times Nigeria',
+    url: 'https://www.premiumtimesng.com/feed',
+    key: 'premium-times',
+    reliability: 'high',
+    tags: ['africa', 'nigeria', 'west-africa'],
+  },
+  {
+    name: 'Daily Nation (Kenya)',
+    url: 'https://nation.africa/kenya/rss',
+    key: 'daily-nation',
+    reliability: 'high',
+    tags: ['africa', 'kenya', 'east-africa'],
+  },
+  {
+    name: 'The East African',
+    url: 'https://www.theeastafrican.co.ke/rss',
+    key: 'east-african',
+    reliability: 'high',
+    tags: ['africa', 'east-africa', 'regional'],
+  },
+  {
+    name: 'Mail & Guardian (South Africa)',
+    url: 'https://mg.co.za/feed/',
+    key: 'mail-guardian',
+    reliability: 'high',
+    tags: ['africa', 'south-africa', 'southern-africa'],
+  },
+  {
+    name: 'BusinessDay Nigeria',
+    url: 'https://businessday.ng/feed/',
+    key: 'business-day-ng',
+    reliability: 'medium',
+    tags: ['africa', 'nigeria', 'economics'],
+  },
+]
+
+// ─── Expanded Latin America feeds ─────────────────────────────────────────────
+
+export const LATAM_FEEDS: FeedConfig[] = [
+  {
+    name: 'Americas Quarterly',
+    url: 'https://www.americasquarterly.org/feed/',
+    key: 'americas-quarterly',
+    reliability: 'high',
+    tags: ['latin-america', 'politics', 'analysis'],
+  },
+  {
+    name: 'Agência Brasil',
+    url: 'https://agenciabrasil.ebc.com.br/en/rss/ultimasnoticias/feed',
+    key: 'agencia-brasil',
+    reliability: 'high',
+    tags: ['latin-america', 'brazil', 'south-america'],
+  },
+  {
+    name: 'Rio Times Online',
+    url: 'https://riotimesonline.com/feed/',
+    key: 'rio-times',
+    reliability: 'medium',
+    tags: ['latin-america', 'brazil'],
+  },
+]
+
+// ─── Southeast Asia & Pacific feeds ──────────────────────────────────────────
+
+export const APAC_FEEDS: FeedConfig[] = [
+  {
+    name: 'Bangkok Post',
+    url: 'https://www.bangkokpost.com/rss/data/topstories.xml',
+    key: 'bangkok-post',
+    reliability: 'high',
+    tags: ['southeast-asia', 'thailand', 'asean'],
+  },
+  {
+    name: 'The Irrawaddy',
+    url: 'https://www.irrawaddy.com/feed',
+    key: 'irrawaddy',
+    reliability: 'high',
+    tags: ['southeast-asia', 'myanmar', 'conflict'],
+  },
+  {
+    name: 'Benar News',
+    url: 'https://www.benarnews.org/rss/bnews.xml',
+    key: 'benar-news',
+    reliability: 'high',
+    tags: ['southeast-asia', 'south-asia', 'rfa'],
+  },
+  {
+    name: 'Rappler',
+    url: 'https://www.rappler.com/feed/',
+    key: 'rappler',
+    reliability: 'high',
+    tags: ['southeast-asia', 'philippines'],
+  },
+  {
+    name: 'The Jakarta Post',
+    url: 'https://www.thejakartapost.com/feed',
+    key: 'jakarta-post',
+    reliability: 'high',
+    tags: ['southeast-asia', 'indonesia', 'asean'],
+  },
+]
+
+// ─── Eurasia / Eastern Europe feeds ──────────────────────────────────────────
+
+export const EURASIA_FEEDS: FeedConfig[] = [
+  {
+    name: 'Meduza (English)',
+    url: 'https://meduza.io/rss/en/all',
+    key: 'meduza',
+    reliability: 'high',
+    tags: ['russia', 'eastern-europe', 'independent'],
+  },
+  {
+    name: 'Eurasianet',
+    url: 'https://eurasianet.org/rss.xml',
+    key: 'eurasianet',
+    reliability: 'high',
+    tags: ['central-asia', 'caucasus', 'eurasia'],
+  },
+  {
+    name: 'Balkan Insight',
+    url: 'https://balkaninsight.com/feed/',
+    key: 'balkan-insight',
+    reliability: 'high',
+    tags: ['balkans', 'eastern-europe', 'eu-accession'],
+  },
+  {
+    name: 'OCCRP',
+    url: 'https://www.occrp.org/en/feed/',
+    key: 'occrp',
+    reliability: 'high',
+    tags: ['corruption', 'organized-crime', 'eastern-europe'],
+  },
+  {
+    name: 'CABAR.asia',
+    url: 'https://cabar.asia/en/feed/',
+    key: 'cabar-asia',
+    reliability: 'medium',
+    tags: ['central-asia', 'kyrgyzstan', 'kazakhstan'],
+  },
+]
+
+// ─── Global multilateral & state broadcaster feeds ────────────────────────────
+
+export const MULTILATERAL_FEEDS: FeedConfig[] = [
+  {
+    name: 'France 24 (English)',
+    url: 'https://www.france24.com/en/rss',
+    key: 'france24',
+    reliability: 'high',
+    tags: ['france', 'world', 'africa', 'francophone'],
+  },
+  {
+    name: 'DW News World',
+    url: 'https://rss.dw.com/rdf/rss-en-world',
+    key: 'dw-news',
+    reliability: 'high',
+    tags: ['germany', 'world', 'europe'],
+  },
+  {
+    name: 'Voice of America',
+    url: 'https://www.voanews.com/api/z-qeqp_-oyiui',
+    key: 'voa-news',
+    reliability: 'high',
+    tags: ['world', 'us-policy', 'international'],
+  },
+  {
+    name: 'NHK World',
+    url: 'https://www3.nhk.or.jp/rss/news/cat0.xml',
+    key: 'nhk-world',
+    reliability: 'high',
+    tags: ['japan', 'asia', 'world'],
+  },
+  {
+    name: 'RFI English',
+    url: 'https://www.rfi.fr/en/rss',
+    key: 'rfi-english',
+    reliability: 'high',
+    tags: ['france', 'africa', 'world', 'francophone'],
+  },
+  {
+    name: 'The Print (India)',
+    url: 'https://theprint.in/feed/',
+    key: 'the-print',
+    reliability: 'high',
+    tags: ['india', 'south-asia', 'geopolitics'],
+  },
+]
+
 export const ALL_RSS_FEEDS: FeedConfig[] = [
   ...RSS_FEEDS,
+  ...MENA_FEEDS,
+  ...AFRICA_FEEDS,
+  ...LATAM_FEEDS,
+  ...APAC_FEEDS,
+  ...EURASIA_FEEDS,
+  ...MULTILATERAL_FEEDS,
   ...CYBER_FEEDS,
   ...TRADE_FEEDS,
 ]
 
 // Reverse lookup: source display name → bias (for UI display without needing DB field)
 export const SOURCE_NAME_BIAS_MAP: Record<string, SourceBias> = Object.fromEntries(
-  RSS_FEEDS
+  ALL_RSS_FEEDS
     .map((f) => [f.name, SOURCE_BIAS_MAP[f.key]])
     .filter(([, bias]) => bias !== undefined)
 ) as Record<string, SourceBias>
